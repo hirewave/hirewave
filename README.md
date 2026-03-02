@@ -1,71 +1,37 @@
-# Prerequisites
+# Hirewave
 
-For using Github Codespaces, no prerequisites are mandatory.
-Follow the [./PREREQUISITES.md](./PREREQUISITES.md) instructions to configure a local virtual machine with Ubuntu, Docker, IntelliJ
+## Team
+- **Team Name:** Hirewave
+- **Members:**
+  - Opran Andrei - Freelancer profiles (CRUD), skills + hourly rate validation, unique email; owns `Freelancer` domain + API
+  - Prizlopan Iustin-George - Projects (CRUD), project status machine + validations (restrict edits by status); owns `Project` domain + API
+  - Eftimie Traian - Bids (core business logic), prevent duplicate bids, accept/reject flow (cascade: accept → reject others, project → IN_PROGRESS); owns `Bid` domain + API
 
-# Access the code
+## Project Description
 
-* Fork the code GitHub repository under your Organization
-  * https://github.com/UNIBUC-PROD-ENGINEERING/service
-* Clone the code repository:
-  * git@github.com:YOUR_ORG_NAME/service.git
+HireWave is a REST API-based SaaS for a freelance marketplace where clients publish projects and freelancers place bids to win work. The platform focuses on clean business rules (status transitions, validation, and anti-duplicate constraints) and a simple but realistic domain model suitable for production engineering practices.
 
-# Run code in Github Codespaces
+The service will be implemented in Java 21 + Spring Boot and backed by MongoDB for persistence. The project is designed to support end-to-end workflows (create freelancer + create project + submit bids + accept a bid) and to be production-ready: containerized with Docker, testable via CI, and observable via metrics/logging for monitoring and alerting.
 
-* Make sure that the Github repository is forked under your account / Organization
-* Create a new Codespace from your forked repository
-* Wait for the Codespace to be up and running
-* Make sure that Docker service has been started
-    * ```docker ps``` should return no error
-* For running / debugging directly in Visual Studio Code
-  * Start the MongoDB related services
-    * ```./start_mongo_only.sh```
-  * Build and run the Spring Boot service
-    * ```./gradlew build```
-    * ```./gradlew bootRun```
-* For running all services in Docker:
-    * Build the Docker image of the prod-eng service
-        * ```make build```
-    * Start all the service containers
-        * ```./start.sh```
-* Use [requests.http](requests.http) to test API endpoints
-* Navigation between methods (e.g. 'Go to Definition') may require:
-  * ```./gradlew build``` 
+### Key Features
+- Freelancer management: create/list/update/delete freelancer profiles with validated skills and hourly rate + unique email constraint
+- Project management: create/list/update projects with a strict status machine (OPEN → IN_PROGRESS → COMPLETED, OPEN → CANCELLED) and edit restrictions by status
+- Bid system: submit bids with duplicate prevention + accept/reject logic that updates related entities (accept one bid → reject others, project moves to IN_PROGRESS)
+- API-first workflow + testing/observability: REST Client requests, unit/integration/E2E test coverage, metrics for monitoring and alerting
 
-NOTE: for a live demo, please check out [this youtube video](https://youtu.be/-9ePlxz03kg)
+### Technical Stack
+- **Backend:** Spring Boot (Java 21)
+- **Database:** MongoDB
+- **API:** RESTful
+- **Testing:** JUnit, Mockito, Cucumber
+- **Monitoring:** Prometheus, Grafana
+- **Deployment:** Docker
 
-# Run/debug code in IntelliJ
-* Build the code
-    * IntelliJ will build it automatically
-    * If you want to build it from command line and also run unit tests, run: ```./gradlew build```
-* Create an IntelliJ run configuration for a Jar application
-    * Add in the configuration the JAR path to the build folder `./build/libs/prod-eng-0.0.1-SNAPSHOT.jar`
-* Start the MongoDB container using Docker Compose
-    * ```./start_mongo_only.sh```
-* Run/debug your IntelliJ run configuration
-* Open in your browser:
-    * http://localhost:8080/api/users
+## Contributing
 
-# Deploy and run the code locally as Docker instance
-
-* Build the Docker image of the prod-eng service
-    * ```make build```
-* Start all the containers
-    * ```./start.sh```
-
-* Verify that all containers started, by running
-  ```
-  service git:(master) ✗  $ docker ps
-  CONTAINER ID   IMAGE             COMMAND                  CREATED         STATUS         PORTS                                                                                          NAMES
-  d0a14d57ade1   jenkins/jenkins   "/usr/bin/tini -- /u…"   5 seconds ago   Up 4 seconds   0.0.0.0:50000->50000/tcp, [::]:50000->50000/tcp, 0.0.0.0:8082->8080/tcp, [::]:8082->8080/tcp   service-jenkins-1
-  d9465565ebc9   mongo-express     "/sbin/tini -- /dock…"   5 seconds ago   Up 4 seconds   0.0.0.0:8090->8081/tcp, [::]:8090->8081/tcp                                                    service-mongo-admin-ui-1
-  304c29bb39ea   mongo:6.0.20      "docker-entrypoint.s…"   5 seconds ago   Up 4 seconds   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp                                                service-mongo-1
-  a74b4cb2fb58   prod-eng-img      "java -jar /prod-eng…"   5 seconds ago   Up 4 seconds   0.0.0.0:5005->5005/tcp, [::]:5005->5005/tcp, 0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp       service-prod-eng-1
-  ```
-* Open in your browser:
-    * http://localhost:8080/api/users
-* You can test other API endpoints using [requests.http](requests.http)
-* You can access the MongoDB Admin UI at:
-  * http://localhost:8090
-  * default credentials: username `unibuc`, password `adobe`
-  * database `test` contains application entities
+All team members follow trunk-based development:
+1. Create feature branch from `main`
+2. Make changes and commit with clear messages
+3. Create PR and request review
+4. Address feedback
+5. Merge after approval
