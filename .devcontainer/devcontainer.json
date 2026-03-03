@@ -11,6 +11,9 @@
       "moby": false // Install Docker CE instead of OSS Moby build; not part of Trixie distribution
     }
   },
+  "containerEnv": {
+    "JAVA_HOME": "/usr/lib/jvm/msopenjdk-current"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -20,7 +23,14 @@
         "ritwickdey.LiveServer",
         "humao.rest-client",
         "vscjava.vscode-gradle"
-      ]
+      ],
+      "settings": {
+        "java.import.gradle.java.home": "/usr/lib/jvm/msopenjdk-current",
+        "java.jdt.ls.java.home": "/usr/lib/jvm/msopenjdk-current",
+        "redhat.telemetry.enabled": false,
+        "telemetry.telemetryLevel": "off",
+        "makefile.configureOnOpen": false
+      }
     }
   },
   "forwardPorts": [8080]
