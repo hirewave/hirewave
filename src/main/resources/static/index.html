@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireWave</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Courier New', monospace; background: #fff; color: #000; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  h1 { font-size: 2em; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 20px; letter-spacing: 0.05em; }
+
+  nav { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid #000; }
+  nav button { background: #fff; color: #000; border: none; border-top: 2px solid #000; border-left: 2px solid #000; padding: 8px 20px; cursor: pointer; font-family: inherit; font-size: 0.9em; margin-bottom: -2px; }
+  nav button:last-child { border-right: 2px solid #000; }
+  nav button:hover { background: #f0f0f0; }
+  nav button.active { background: #000; color: #fff; }
+
+  /* Two-column layout: scrollable table on left, fixed-width form on right */
+  .page-grid { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+  @media (max-width: 720px) { .page-grid { grid-template-columns: 1fr; } }
+
+  .table-wrap { overflow-x: auto; min-width: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82em; min-width: 400px; }
+  thead { position: sticky; top: 0; }
+  th, td { border: 1px solid #000; padding: 6px 10px; text-align: left; }
+  th { background: #000; color: #fff; font-weight: normal; letter-spacing: 0.04em; white-space: nowrap; }
+  td { background: #fff; }
+  tr:hover td { background: #f8f8f8; }
+  td.skills-cell { max-width: 180px; }
+
+  .panel { border: 2px solid #000; padding: 14px; }
+  .panel-title { font-size: 0.9em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #000; }
+  .form-group { margin: 0 0 10px; }
+  .form-group label { display: block; font-size: 0.75em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 6px 8px; border: 1px solid #000;
+    font-family: inherit; font-size: 0.85em; background: #fff; outline: none;
+  }
+  .form-group textarea { height: 56px; resize: vertical; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { box-shadow: 2px 2px 0 #000; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+  .btn { background: #000; color: #fff; border: 2px solid #000; padding: 5px 12px; cursor: pointer; font-family: inherit; font-size: 0.8em; letter-spacing: 0.03em; white-space: nowrap; }
+  .btn:hover { background: #333; border-color: #333; }
+  .btn-outline { background: #fff; color: #000; }
+  .btn-outline:hover { background: #eee; }
+  .btn-danger { background: #800; border-color: #800; }
+  .btn-danger:hover { background: #600; border-color: #600; }
+
+  .badge { display: inline-block; padding: 1px 6px; font-size: 0.73em; border: 1px solid #888; white-space: nowrap; }
+  .badge-open     { background: #d8ffd8; border-color: #090; }
+  .badge-progress { background: #fffad0; border-color: #880; }
+  .badge-completed{ background: #d0e8ff; border-color: #048; }
+  .badge-cancelled{ background: #ffd8d8; border-color: #800; }
+  .badge-pending  { background: #fffad0; border-color: #880; }
+  .badge-accepted { background: #d8ffd8; border-color: #090; }
+  .badge-rejected { background: #ffd8d8; border-color: #800; }
+
+  .msg { padding: 8px 12px; margin: 0 0 16px; font-size: 0.85em; border-left: 4px solid #000; }
+  .msg-err { border-color: #800; background: #ffd8d8; }
+  .msg-ok  { border-color: #090; background: #d8ffd8; }
+
+  .actions { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
+  .empty { color: #666; font-size: 0.85em; padding: 8px 0; }
+  .section-title { font-size: 1em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
+
+  /* Bids tab: 2-col top, full-width bottom */
+  .bids-top { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .bids-bottom { }
+  @media (max-width: 720px) { .bids-top { grid-template-columns: 1fr; } }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<h1>HireWave</h1>
+
+<nav>
+  <button onclick="showTab('freelancers')" id="tab-freelancers">Freelancers</button>
+  <button onclick="showTab('clients')"     id="tab-clients">Clients</button>
+  <button onclick="showTab('projects')"   id="tab-projects">Projects</button>
+  <button onclick="showTab('bids')"       id="tab-bids">Bids</button>
+</nav>
+
+<div id="msg"></div>
+
+<!-- FREELANCERS -->
+<div id="freelancers" class="tab-content hidden">
+  <div class="page-grid">
+    <div>
+      <p class="section-title">Freelancers</p>
+      <div class="table-wrap" id="freelancer-list"><p class="empty">Loading…</p></div>
+    </div>
+    <div class="panel">
+      <p class="panel-title" id="freelancer-form-title">Add Freelancer</p>
+      <input type="hidden" id="f-id">
+      <div class="form-group"><label>Name</label><input id="f-name" placeholder="Alice Developer"></div>
+      <div class="form-group"><label>Email</label><input id="f-email" type="email" placeholder="alice@dev.io"></div>
+      <div class="form-group"><label>Skills (comma-separated)</label><input id="f-skills" placeholder="Java, React, Docker"></div>
+      <div class="form-group"><label>Hourly Rate ($)</label><input id="f-rate" type="number" step="0.01" min="0.01" placeholder="75"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="saveFreelancer()">Save</button>
+        <button class="btn btn-outline" onclick="clearFreelancerForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div id="clients" class="tab-content hidden">
+  <div class="page-grid">
+    <div>
+      <p class="section-title">Clients</p>
+      <div class="table-wrap" id="client-list"><p class="empty">Loading…</p></div>
+    </div>
+    <div class="panel">
+      <p class="panel-title" id="client-form-title">Add Client</p>
+      <input type="hidden" id="c-id">
+      <div class="form-group"><label>Name</label><input id="c-name" placeholder="TechCorp"></div>
+      <div class="form-group"><label>Email</label><input id="c-email" type="email" placeholder="hire@techcorp.com"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="saveClient()">Save</button>
+        <button class="btn btn-outline" onclick="clearClientForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div id="projects" class="tab-content hidden">
+  <div class="page-grid">
+    <div>
+      <p class="section-title">Projects</p>
+      <div class="table-wrap" id="project-list"><p class="empty">Loading…</p></div>
+    </div>
+    <div class="panel">
+      <p class="panel-title" id="project-form-title">Create Project</p>
+      <input type="hidden" id="p-id">
+      <div class="form-group"><label>Title</label><input id="p-title" placeholder="E-Commerce Backend"></div>
+      <div class="form-group"><label>Description</label><textarea id="p-desc" placeholder="Describe the project…"></textarea></div>
+      <div class="form-group"><label>Required Skills</label><input id="p-skills" placeholder="Java, Spring Boot"></div>
+      <div class="form-group"><label>Budget ($)</label><input id="p-budget" type="number" step="0.01" min="0.01" placeholder="5000"></div>
+      <div class="form-group"><label>Client</label><select id="p-client"></select></div>
+      <div class="btn-row">
+        <button class="btn" onclick="saveProject()">Save</button>
+        <button class="btn btn-outline" onclick="clearProjectForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BIDS -->
+<div id="bids" class="tab-content hidden">
+  <div class="bids-top">
+    <div class="panel">
+      <p class="panel-title">Place a Bid</p>
+      <div class="form-group"><label>Project (open)</label><select id="b-project"></select></div>
+      <div class="form-group"><label>Freelancer</label><select id="b-freelancer"></select></div>
+      <div class="form-group"><label>Amount ($)</label><input id="b-amount" type="number" step="0.01" min="0.01" placeholder="4500"></div>
+      <button class="btn" onclick="placeBid()">Submit Bid</button>
+    </div>
+    <div class="panel">
+      <p class="panel-title">Rate a Freelancer</p>
+      <div class="form-group"><label>Completed Project</label><select id="r-project"></select></div>
+      <div class="form-group"><label>Rating (1–5)</label><input id="r-rating" type="number" min="1" max="5" value="5"></div>
+      <button class="btn" onclick="rateFreelancer()">Submit Rating</button>
+    </div>
+  </div>
+  <div class="bids-bottom">
+    <p class="section-title">Bids by Project</p>
+    <div class="form-group" style="max-width:420px;margin-bottom:14px">
+      <label>Select Project</label>
+      <select id="b-view-project" onchange="loadBidsForProject()"></select>
+    </div>
+    <div class="table-wrap" id="bid-list"></div>
+  </div>
+</div>
+
+<script>
+const API = '';
+
+function showMsg(text, isError) {
+  const el = document.getElementById('msg');
+  el.className = isError ? 'msg msg-err' : 'msg msg-ok';
+  el.textContent = text;
+  setTimeout(() => { el.textContent = ''; el.className = ''; }, 4000);
+}
+
+async function api(path, opts) {
+  try {
+    const res = await fetch(API + path, opts);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || res.statusText);
+    }
+    if (res.status === 204) return null;
+    return await res.json();
+  } catch (e) {
+    showMsg(e.message, true);
+    throw e;
+  }
+}
+
+function statusBadge(s) {
+  const cls = { OPEN:'badge-open', IN_PROGRESS:'badge-progress', COMPLETED:'badge-completed', CANCELLED:'badge-cancelled', PENDING:'badge-pending', ACCEPTED:'badge-accepted', REJECTED:'badge-rejected' };
+  return `<span class="badge ${cls[s]||''}">${s.replace('_',' ')}</span>`;
+}
+
+function stars(r) {
+  if (!r) return '—';
+  const n = Math.round(r);
+  return '★'.repeat(n) + '☆'.repeat(5-n) + ' ' + r.toFixed(1);
+}
+
+function esc(s) {
+  if (s == null) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+  document.getElementById(name).classList.remove('hidden');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'freelancers') loadFreelancers();
+  if (name === 'clients') loadClients();
+  if (name === 'projects') { loadProjects(); loadClientsForSelect(); }
+  if (name === 'bids') { loadProjectsForSelect(); loadFreelancersForSelect(); loadCompletedProjectsForSelect(); }
+}
+
+// ── FREELANCERS ──────────────────────────────────────────────
+async function loadFreelancers() {
+  const data = await api('/api/freelancers');
+  const el = document.getElementById('freelancer-list');
+  if (!data.length) { el.innerHTML = '<p class="empty">No freelancers yet.</p>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Name</th><th>Email</th><th>Skills</th><th>$/hr</th><th>Rating</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(f => `<tr>
+      <td>${esc(f.name)}</td><td>${esc(f.email)}</td>
+      <td class="skills-cell">${f.skills.map(s=>`<span class="badge">${esc(s)}</span>`).join(' ')}</td>
+      <td>$${f.hourlyRate}</td><td>${stars(f.averageRating)}</td>
+      <td><div class="actions">
+        <button class="btn" onclick="editFreelancer('${f.id}')">Edit</button>
+        <button class="btn btn-danger" onclick="deleteFreelancer('${f.id}')">Del</button>
+      </div></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function saveFreelancer() {
+  const id = document.getElementById('f-id').value;
+  const body = { name: document.getElementById('f-name').value, email: document.getElementById('f-email').value,
+    skills: document.getElementById('f-skills').value.split(',').map(s=>s.trim()).filter(Boolean),
+    hourlyRate: parseFloat(document.getElementById('f-rate').value) };
+  if (id) {
+    await api('/api/freelancers/'+id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    showMsg('Freelancer updated', false);
+  } else {
+    await api('/api/freelancers', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    showMsg('Freelancer created', false);
+  }
+  clearFreelancerForm(); loadFreelancers();
+}
+
+async function editFreelancer(id) {
+  const f = await api('/api/freelancers/'+id);
+  document.getElementById('f-id').value = f.id;
+  document.getElementById('f-name').value = f.name;
+  document.getElementById('f-email').value = f.email;
+  document.getElementById('f-skills').value = f.skills.join(', ');
+  document.getElementById('f-rate').value = f.hourlyRate;
+  document.getElementById('freelancer-form-title').textContent = 'Edit Freelancer';
+}
+
+async function deleteFreelancer(id) {
+  if (!confirm('Delete this freelancer?')) return;
+  await api('/api/freelancers/'+id, {method:'DELETE'});
+  showMsg('Freelancer deleted', false); loadFreelancers();
+}
+
+function clearFreelancerForm() {
+  ['f-id','f-name','f-email','f-skills','f-rate'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('freelancer-form-title').textContent = 'Add Freelancer';
+}
+
+// ── CLIENTS ──────────────────────────────────────────────────
+async function loadClients() {
+  const data = await api('/api/clients');
+  const el = document.getElementById('client-list');
+  if (!data.length) { el.innerHTML = '<p class="empty">No clients yet.</p>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Name</th><th>Email</th><th>Completed</th><th>Cancelled</th><th>Reputation</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(c => `<tr>
+      <td>${esc(c.name)}</td><td>${esc(c.email)}</td>
+      <td>${c.completedProjects}</td><td>${c.cancelledProjects}</td>
+      <td>${(c.reputationScore*100).toFixed(0)}%</td>
+      <td><div class="actions">
+        <button class="btn" onclick="editClient('${c.id}')">Edit</button>
+        <button class="btn btn-danger" onclick="deleteClient('${c.id}')">Del</button>
+      </div></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function saveClient() {
+  const id = document.getElementById('c-id').value;
+  const body = { name: document.getElementById('c-name').value, email: document.getElementById('c-email').value };
+  if (id) {
+    await api('/api/clients/'+id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    showMsg('Client updated', false);
+  } else {
+    await api('/api/clients', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    showMsg('Client created', false);
+  }
+  clearClientForm(); loadClients();
+}
+
+async function editClient(id) {
+  const c = await api('/api/clients/'+id);
+  document.getElementById('c-id').value = c.id;
+  document.getElementById('c-name').value = c.name;
+  document.getElementById('c-email').value = c.email;
+  document.getElementById('client-form-title').textContent = 'Edit Client';
+}
+
+async function deleteClient(id) {
+  if (!confirm('Delete this client?')) return;
+  await api('/api/clients/'+id, {method:'DELETE'});
+  showMsg('Client deleted', false); loadClients();
+}
+
+function clearClientForm() {
+  ['c-id','c-name','c-email'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('client-form-title').textContent = 'Add Client';
+}
+
+// ── PROJECTS ─────────────────────────────────────────────────
+async function loadProjects() {
+  const data = await api('/api/projects');
+  const el = document.getElementById('project-list');
+  if (!data.length) { el.innerHTML = '<p class="empty">No projects yet.</p>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Title</th><th>Client</th><th>Skills</th><th>Budget</th><th>Status</th><th>Awarded To</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(p => `<tr>
+      <td>${esc(p.title)}</td><td>${esc(p.clientName)}</td>
+      <td class="skills-cell">${p.requiredSkills.map(s=>`<span class="badge">${esc(s)}</span>`).join(' ')}</td>
+      <td>$${p.budget}</td><td>${statusBadge(p.status)}</td>
+      <td>${p.awardedFreelancerName ? esc(p.awardedFreelancerName) : '—'}</td>
+      <td><div class="actions">
+        ${p.status==='OPEN'?`<button class="btn" onclick="editProject('${p.id}')">Edit</button><button class="btn btn-danger" onclick="cancelProject('${p.id}')">Cancel</button>`:''}
+        ${p.status==='IN_PROGRESS'?`<button class="btn" onclick="completeProject('${p.id}')">Complete</button>`:''}
+      </div></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function loadClientsForSelect() {
+  const data = await api('/api/clients');
+  document.getElementById('p-client').innerHTML = data.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+}
+
+async function saveProject() {
+  const id = document.getElementById('p-id').value;
+  const body = { title: document.getElementById('p-title').value, description: document.getElementById('p-desc').value,
+    requiredSkills: document.getElementById('p-skills').value.split(',').map(s=>s.trim()).filter(Boolean),
+    budget: parseFloat(document.getElementById('p-budget').value), clientId: document.getElementById('p-client').value };
+  if (id) {
+    const { clientId, ...upd } = body;
+    await api('/api/projects/'+id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(upd)});
+    showMsg('Project updated', false);
+  } else {
+    await api('/api/projects', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    showMsg('Project created', false);
+  }
+  clearProjectForm(); loadProjects();
+}
+
+async function editProject(id) {
+  const p = await api('/api/projects/'+id);
+  document.getElementById('p-id').value = p.id;
+  document.getElementById('p-title').value = p.title;
+  document.getElementById('p-desc').value = p.description;
+  document.getElementById('p-skills').value = p.requiredSkills.join(', ');
+  document.getElementById('p-budget').value = p.budget;
+  document.getElementById('project-form-title').textContent = 'Edit Project';
+}
+
+async function cancelProject(id) {
+  if (!confirm('Cancel this project?')) return;
+  await api('/api/projects/'+id+'/cancel', {method:'PATCH'});
+  showMsg('Project cancelled', false); loadProjects();
+}
+
+async function completeProject(id) {
+  if (!confirm('Mark as completed?')) return;
+  await api('/api/projects/'+id+'/complete', {method:'PATCH'});
+  showMsg('Project completed', false); loadProjects();
+}
+
+function clearProjectForm() {
+  ['p-id','p-title','p-desc','p-skills','p-budget'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('project-form-title').textContent = 'Create Project';
+}
+
+// ── BIDS ─────────────────────────────────────────────────────
+async function loadProjectsForSelect() {
+  const data = await api('/api/projects');
+  const open = data.filter(p => p.status==='OPEN');
+  document.getElementById('b-project').innerHTML = open.length
+    ? open.map(p=>`<option value="${p.id}">${esc(p.title)}</option>`).join('')
+    : '<option value="">No open projects</option>';
+  document.getElementById('b-view-project').innerHTML =
+    '<option value="">— Select project —</option>' +
+    data.map(p=>`<option value="${p.id}">${esc(p.title)} [${p.status}]</option>`).join('');
+}
+
+async function loadFreelancersForSelect() {
+  const data = await api('/api/freelancers');
+  document.getElementById('b-freelancer').innerHTML = data.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
+}
+
+async function loadCompletedProjectsForSelect() {
+  const data = await api('/api/projects');
+  const done = data.filter(p => p.status==='COMPLETED');
+  document.getElementById('r-project').innerHTML = done.length
+    ? done.map(p=>`<option value="${p.id}">${esc(p.title)}</option>`).join('')
+    : '<option value="">No completed projects</option>';
+}
+
+async function placeBid() {
+  const body = { projectId: document.getElementById('b-project').value,
+    freelancerId: document.getElementById('b-freelancer').value,
+    amount: parseFloat(document.getElementById('b-amount').value) };
+  await api('/api/bids', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  showMsg('Bid placed', false);
+  document.getElementById('b-amount').value = '';
+  loadProjectsForSelect();
+}
+
+async function loadBidsForProject() {
+  const projectId = document.getElementById('b-view-project').value;
+  const el = document.getElementById('bid-list');
+  if (!projectId) { el.innerHTML = ''; return; }
+  const data = await api('/api/bids?projectId='+projectId);
+  if (!data.length) { el.innerHTML = '<p class="empty">No bids for this project.</p>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Freelancer</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(b=>`<tr>
+      <td>${esc(b.freelancerName)}</td><td>$${b.amount}</td><td>${statusBadge(b.status)}</td>
+      <td><div class="actions">
+        ${b.status==='PENDING'?`<button class="btn" onclick="acceptBid('${b.id}')">Accept</button><button class="btn btn-outline" onclick="rejectBid('${b.id}')">Reject</button>`:''}
+      </div></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function acceptBid(id) {
+  await api('/api/bids/'+id+'/accept', {method:'PATCH'});
+  showMsg('Bid accepted', false);
+  loadBidsForProject(); loadProjectsForSelect(); loadCompletedProjectsForSelect();
+}
+
+async function rejectBid(id) {
+  await api('/api/bids/'+id+'/reject', {method:'PATCH'});
+  showMsg('Bid rejected', false); loadBidsForProject();
+}
+
+async function rateFreelancer() {
+  const projectId = document.getElementById('r-project').value;
+  const rating = parseInt(document.getElementById('r-rating').value);
+  if (!projectId) { showMsg('Select a completed project', true); return; }
+  await api('/api/projects/'+projectId+'/rate', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ rating })
+  });
+  showMsg('Rating submitted', false);
+}
+
+showTab('freelancers');
+</script>
+</body>
+</html>
