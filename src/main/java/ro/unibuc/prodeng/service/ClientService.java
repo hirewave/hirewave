@@ -75,7 +75,8 @@ public class ClientService {
         }
         clientRepository.incrementCancelledProjects(clientId);
     }
-        private ClientResponse toResponse(ClientEntity entity) {
+    
+    private ClientResponse toResponse(ClientEntity entity) {
         int total = entity.completedProjects() + entity.cancelledProjects();
         double reputation = total == 0 ? 0.0 : (double) entity.completedProjects() / total;
         return new ClientResponse(
