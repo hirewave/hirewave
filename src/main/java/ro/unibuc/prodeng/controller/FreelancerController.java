@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import ro.unibuc.prodeng.request.CreateFreelancerRequest;
+import ro.unibuc.prodeng.request.RateFreelancerRequest;
 import ro.unibuc.prodeng.request.UpdateFreelancerRequest;
 import ro.unibuc.prodeng.response.FreelancerResponse;
 import ro.unibuc.prodeng.service.FreelancerService;
@@ -46,5 +47,12 @@ public class FreelancerController {
     public ResponseEntity<Void> deleteFreelancer(@PathVariable String id) {
         freelancerService.deleteFreelancer(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/ratings")
+    public ResponseEntity<FreelancerResponse> addRating(
+            @PathVariable String id,
+            @Valid @RequestBody RateFreelancerRequest request) {
+        return ResponseEntity.ok(freelancerService.addRating(id, request.rating()));
     }
 }
