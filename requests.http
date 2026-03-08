@@ -123,6 +123,51 @@ DELETE http://localhost:8080/api/clients/{{createClient.response.body.id}}
 
 
 # ==========================================
+# Freelancer Controller Endpoints
+# ==========================================
+
+### Get all freelancers
+GET http://localhost:8080/api/freelancers
+
+### Create a new freelancer (run this to populate variables for other requests)
+# @name createFreelancer
+POST http://localhost:8080/api/freelancers
+Content-Type: application/json
+
+{
+    "name": "Terry Davis",
+    "email": "terry@templeos.org",
+    "skills": ["C", "Assembly", "OS Development"],
+    "hourlyRate": 100.0
+}
+
+### Get freelancer by ID (uses ID from createFreelancer response)
+GET http://localhost:8080/api/freelancers/{{createFreelancer.response.body.id}}
+
+### Update freelancer (PUT)
+PUT http://localhost:8080/api/freelancers/{{createFreelancer.response.body.id}}
+Content-Type: application/json
+
+{
+    "name": "Terry A. Davis",
+    "email": "terry@templeos.org",
+    "skills": ["C", "Assembly", "OS Development", "HolyC"],
+    "hourlyRate": 110.0
+}
+
+### Rate a freelancer
+POST http://localhost:8080/api/freelancers/{{createFreelancer.response.body.id}}/ratings
+Content-Type: application/json
+
+{
+    "rating": 5
+}
+
+### Delete freelancer
+DELETE http://localhost:8080/api/freelancers/{{createFreelancer.response.body.id}}
+
+
+# ==========================================
 # Cleanup (run these last)
 # ==========================================
 
