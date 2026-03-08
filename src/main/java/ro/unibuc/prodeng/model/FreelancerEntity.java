@@ -13,7 +13,6 @@ public record FreelancerEntity(
     @Indexed(unique = true) String email,
     List<String> skills,
     double hourlyRate,
-    double averageRating,
     int totalRatings,
     int ratingSum
 ) {}
