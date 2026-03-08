@@ -90,6 +90,39 @@ Content-Type: application/json
 
 
 # ==========================================
+# Client Controller Endpoints
+# ==========================================
+
+### Get all clients
+GET http://localhost:8080/api/clients
+
+### Create a new client (run this to populate variables for other requests)
+# @name createClient
+POST http://localhost:8080/api/clients
+Content-Type: application/json
+
+{
+    "name": "Broski Corporation",
+    "email": "hiring@broski.io"
+}
+
+### Get client by ID (uses ID from createClient response)
+GET http://localhost:8080/api/clients/{{createClient.response.body.id}}
+
+### Update client (PUT)
+PUT http://localhost:8080/api/clients/{{createClient.response.body.id}}
+Content-Type: application/json
+
+{
+    "name": "Broski Corporation Ltd",
+    "email": "projects@broski.io"
+}
+
+### Delete client
+DELETE http://localhost:8080/api/clients/{{createClient.response.body.id}}
+
+
+# ==========================================
 # Cleanup (run these last)
 # ==========================================
 
