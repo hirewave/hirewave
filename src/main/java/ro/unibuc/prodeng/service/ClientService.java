@@ -3,6 +3,7 @@ package ro.unibuc.prodeng.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
@@ -38,7 +39,11 @@ public class ClientService {
             throw new IllegalArgumentException("Email already exists: " + request.email());
         }
         ClientEntity entity = new ClientEntity(null, request.name(), request.email(), 0, 0);
-        return toResponse(clientRepository.save(entity));
+        try {
+            return toResponse(clientRepository.save(entity));
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("Email already exists: " + request.email());
+        }
     }
 
     public ClientResponse updateClient(String id, UpdateClientRequest request) {
@@ -52,7 +57,11 @@ public class ClientService {
                 id, request.name(), request.email(),
                 existing.completedProjects(), existing.cancelledProjects()
         );
-        return toResponse(clientRepository.save(updated));
+        try {
+            return toResponse(clientRepository.save(updated));
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("Email already exists: " + request.email());
+        }
     }
 
     public void deleteClient(String id) {
