@@ -3,6 +3,7 @@ package ro.unibuc.prodeng.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
@@ -42,7 +43,11 @@ public class FreelancerService {
                 request.skills(), request.hourlyRate(),
                 0, 0
         );
-        return toResponse(freelancerRepository.save(entity));
+        try {
+            return toResponse(freelancerRepository.save(entity));
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("Email already exists: " + request.email());
+        }
     }
 
     public FreelancerResponse updateFreelancer(String id, UpdateFreelancerRequest request) {
@@ -58,7 +63,11 @@ public class FreelancerService {
                 request.skills(), request.hourlyRate(),
                 existing.totalRatings(), existing.ratingSum()
         );
-        return toResponse(freelancerRepository.save(updated));
+        try {
+            return toResponse(freelancerRepository.save(updated));
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("Email already exists: " + request.email());
+        }
     }
 
     public void deleteFreelancer(String id) {
