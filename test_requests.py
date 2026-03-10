@@ -74,6 +74,7 @@ def cleanup():
         "hiring@broski.io", "projects@broski.io",
         "techcorp@example.com", "startupx@example.com",
         "agency@example.com", "reputation@example.com", "lifecycle@example.com",
+        "fl-s7-counterstorm@example.com",
     }
     scenario_freelancer_prefixes = (
         "dev", "ada@", "terry@",
@@ -652,6 +653,135 @@ if s5_client_id and s5_fl_id:
         # Verify client completed count increased
         rc = requests.get(BASE + f"/api/clients/{s5_client_id}").json()
         assert_field("Client completedProjects == 1", rc.get("completedProjects"), 1)
+
+
+# ─── SCENARIO 6 ───────────────────────────────────────────────────────────────
+scenario(
+    "Concurrent Rating Storm — atomic $inc under parallel load",
+    "100 rating requests (all value=1) are fired in parallel against a single\n"
+    "  freelancer. The final totalRatings must equal exactly 100 and\n"
+    "  averageRating must equal exactly 1.0 — proving no $inc update is lost."
+)
+
+import concurrent.futures
+
+CONCURRENT_RATINGS = 100
+
+r = requests.post(BASE + "/api/freelancers", timeout=5,
+                  json={"name": "Storm Target", "email": "fl-s6-storm@example.com",
+                        "skills": ["Go"], "hourlyRate": 80.0})
+s6_fl_id = r.json()["id"] if r.ok else None
+
+if s6_fl_id:
+    def fire_rating(_):
+        return requests.post(BASE + f"/api/freelancers/{s6_fl_id}/ratings",
+                             json={"rating": 1}, timeout=10)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=CONCURRENT_RATINGS) as pool:
+        futures = list(pool.map(fire_rating, range(CONCURRENT_RATINGS)))
+
+    http_200s = sum(1 for resp in futures if resp.status_code == 200)
+    print(f"  {Fore.WHITE}  {http_200s}/{CONCURRENT_RATINGS} HTTP 200s received{Style.RESET_ALL}")
+
+    fl_final = requests.get(BASE + f"/api/freelancers/{s6_fl_id}", timeout=5).json()
+    assert_field(f"totalRatings == {CONCURRENT_RATINGS} (no lost $inc)",
+                 fl_final.get("totalRatings"), CONCURRENT_RATINGS)
+    avg6 = round(fl_final.get("averageRating", -1), 1)
+    assert_field("averageRating == 1.0 (all ratings were 1)",
+                 avg6, 1.0)
+else:
+    print(f"  {FAIL}  Could not create storm-target freelancer — skipping scenario 6")
+    results.append(False)
+    results.append(False)
+
+
+# ─── SCENARIO 7 ───────────────────────────────────────────────────────────────
+scenario(
+    "Concurrent Client Counter Storm — atomic $inc for completed & cancelled",
+    "A single client owns 100 OPEN projects and 100 IN_PROGRESS projects.\n"
+    "  All 100 cancel and all 100 complete PATCHes are fired in parallel.\n"
+    "  cancelledProjects must equal 100, completedProjects must equal 100,\n"
+    "  and reputationScore must equal exactly 0.50 — proving no $inc is lost."
+)
+
+CONCURRENT_PROJECTS = 100
+
+r = requests.post(BASE + "/api/clients", timeout=5,
+                  json={"name": "Counter Storm Corp", "email": "fl-s7-counterstorm@example.com"})
+s7_client_id = r.json()["id"] if r.ok else None
+
+# One freelancer per complete-project to avoid the 3-active-project capacity wall
+s7_fl_ids = []
+for i in range(CONCURRENT_PROJECTS):
+    rw = requests.post(BASE + "/api/freelancers", timeout=5,
+                       json={"name": f"S7 Worker {i:02d}",
+                             "email": f"fl-s7-w-{i:02d}@example.com",
+                             "skills": ["Scala"], "hourlyRate": 55.0})
+    if rw.ok:
+        s7_fl_ids.append(rw.json()["id"])
+
+if s7_client_id and len(s7_fl_ids) == CONCURRENT_PROJECTS:
+    # --- set up OPEN projects (cancel targets) ---
+    s7_open_ids = []
+    for i in range(CONCURRENT_PROJECTS):
+        rp = requests.post(BASE + "/api/projects", timeout=5,
+                           json={"title": f"Cancel-me {i}", "description": "to be cancelled",
+                                 "clientId": s7_client_id,
+                                 "requiredSkills": ["Scala"], "budget": 100.0})
+        if rp.ok:
+            s7_open_ids.append(rp.json()["id"])
+
+    # --- set up IN_PROGRESS projects (complete targets): create → bid → accept ---
+    s7_inprogress_ids = []
+    for i, fl_id in enumerate(s7_fl_ids):
+        rp = requests.post(BASE + "/api/projects", timeout=5,
+                           json={"title": f"Complete-me {i}", "description": "to be completed",
+                                 "clientId": s7_client_id,
+                                 "requiredSkills": ["Scala"], "budget": 100.0})
+        if not rp.ok:
+            continue
+        proj_id = rp.json()["id"]
+        rb = requests.post(BASE + "/api/bids", timeout=5,
+                           json={"projectId": proj_id, "freelancerId": fl_id,
+                                 "amount": 90.0, "message": "storm worker"})
+        if not rb.ok:
+            continue
+        bid_id = rb.json()["id"]
+        ra = requests.patch(BASE + f"/api/bids/{bid_id}/accept", timeout=5)
+        if ra.ok:
+            s7_inprogress_ids.append(proj_id)
+
+    print(f"  {Fore.WHITE}  {len(s7_open_ids)} OPEN projects ready to cancel, "
+          f"{len(s7_inprogress_ids)} IN_PROGRESS projects ready to complete{Style.RESET_ALL}")
+
+    # --- fire all cancels and completes in parallel ---
+    def fire_cancel(proj_id):
+        return requests.patch(BASE + f"/api/projects/{proj_id}/cancel", timeout=10)
+
+    def fire_complete(proj_id):
+        return requests.patch(BASE + f"/api/projects/{proj_id}/complete", timeout=10)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=CONCURRENT_PROJECTS * 2) as pool:
+        cancel_futs  = list(pool.map(fire_cancel,   s7_open_ids))
+        complete_futs = list(pool.map(fire_complete, s7_inprogress_ids))
+
+    cancel_200s  = sum(1 for r in cancel_futs  if r.status_code == 200)
+    complete_200s = sum(1 for r in complete_futs if r.status_code == 200)
+    print(f"  {Fore.WHITE}  {cancel_200s}/{len(s7_open_ids)} cancel 200s, "
+          f"{complete_200s}/{len(s7_inprogress_ids)} complete 200s{Style.RESET_ALL}")
+
+    c7 = requests.get(BASE + f"/api/clients/{s7_client_id}", timeout=5).json()
+    assert_field(f"cancelledProjects == {CONCURRENT_PROJECTS} (no lost $inc)",
+                 c7.get("cancelledProjects"), CONCURRENT_PROJECTS)
+    assert_field(f"completedProjects == {CONCURRENT_PROJECTS} (no lost $inc)",
+                 c7.get("completedProjects"), CONCURRENT_PROJECTS)
+    rep7 = round(c7.get("reputationScore", -1), 2)
+    assert_field("reputationScore == 0.50", rep7, 0.50)
+else:
+    print(f"  {FAIL}  Could not create client/freelancer for scenario 7 — skipping")
+    results.append(False)
+    results.append(False)
+    results.append(False)
 
 
 # ─── SUMMARY ──────────────────────────────────────────────────────────────────
