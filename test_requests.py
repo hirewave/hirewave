@@ -70,9 +70,25 @@ def cleanup():
 
     # Clients (email may have been updated to projects@broski.io on a previous run)
     r = requests.get(BASE + "/api/clients", timeout=5)
+    scenario_client_emails = {
+        "hiring@broski.io", "projects@broski.io",
+        "techcorp@example.com", "startupx@example.com",
+        "agency@example.com", "reputation@example.com", "lifecycle@example.com",
+    }
+    scenario_freelancer_prefixes = (
+        "dev", "ada@", "terry@",
+        "fl-s",   # scenario freelancers
+    )
     for c in (r.json() if r.ok else []):
-        if c.get("email") in {"hiring@broski.io", "projects@broski.io"}:
+        if c.get("email") in scenario_client_emails:
             requests.delete(BASE + f"/api/clients/{c['id']}", timeout=5)
+
+    # Scenario freelancers — wipe all whose email starts with "fl-s"
+    r = requests.get(BASE + "/api/freelancers", timeout=5)
+    for f in (r.json() if r.ok else []):
+        e = f.get("email", "")
+        if e in {"terry@templeos.org", "ada@lovelace.dev"} or e.startswith("fl-s"):
+            requests.delete(BASE + f"/api/freelancers/{f['id']}", timeout=5)
 
     print(f"  {Fore.MAGENTA}  Done.{Style.RESET_ALL}")
 
@@ -312,6 +328,331 @@ check("POST client missing email → 400", "post", "/api/clients",
 check("GET non-existent project → 404", "get", "/api/projects/nonexistentid000", 404)
 check("GET non-existent bid → 404", "get", "/api/bids/nonexistentid000", 404)
 check("GET non-existent freelancer → 404", "get", "/api/freelancers/nonexistentid000", 404)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SCENARIO TESTS
+# ══════════════════════════════════════════════════════════════════════════════
+
+def scenario(title, description):
+    print(f"\n{Fore.YELLOW}{Style.BRIGHT}{'═'*70}")
+    print(f"  SCENARIO: {title}")
+    print(f"  {description}")
+    print(f"{'═'*70}{Style.RESET_ALL}")
+
+def assert_field(label, actual, expected):
+    ok = actual == expected
+    tag = PASS if ok else FAIL
+    color = Fore.GREEN if ok else Fore.RED
+    print(f"  {tag}  {label:<60} {color}{actual!r}{Style.RESET_ALL}")
+    results.append(ok)
+
+
+# ─── SCENARIO 1 ───────────────────────────────────────────────────────────────
+scenario(
+    "Competitive Bidding Race — 20 freelancers, only 10 qualify by skill",
+    "TechCorp posts a Java/Spring project. 20 freelancers sign up: 10 have Java,\n"
+    "  10 do not. All 20 attempt to bid. Exactly 10 succeed, 10 are rejected.\n"
+    "  The lowest bid wins. All other 9 valid bids are cascade-rejected on accept."
+)
+
+r = check("Create client TechCorp", "post", "/api/clients",
+          201, json={"name": "TechCorp", "email": "techcorp@example.com"})
+s1_client_id = r.json()["id"] if r and r.ok else None
+
+r = check("Create Java project", "post", "/api/projects",
+          201, json={"title": "Enterprise Portal",
+                     "description": "Spring Boot monolith migration",
+                     "clientId": s1_client_id,
+                     "requiredSkills": ["Java", "Spring Boot"],
+                     "budget": 15000.0})
+s1_proj_id = r.json()["id"] if r and r.ok else None
+
+s1_fl_ids   = []   # freelancers with matching skill → can bid
+s1_fl_no_ids = []  # freelancers with wrong skill   → cannot bid
+
+for i in range(1, 21):
+    has_skill = i <= 10
+    skills    = ["Java", "Spring Boot"] if has_skill else ["PHP", "Ruby"]
+    rate      = 50.0 + i * 5          # rates from 55 to 150
+    email     = f"fl-s1-{'yes' if has_skill else 'no'}-{i:02d}@example.com"
+    r = requests.post(BASE + "/api/freelancers", timeout=5,
+                      json={"name": f"Dev {i:02d}", "email": email,
+                            "skills": skills, "hourlyRate": rate})
+    fid = r.json()["id"] if r.ok else None
+    if has_skill:
+        s1_fl_ids.append((fid, rate, email))
+    else:
+        s1_fl_no_ids.append((fid, rate, email))
+
+print(f"  {Fore.WHITE}  Created 10 Java-skilled + 10 non-skilled freelancers{Style.RESET_ALL}")
+
+accepted_bids = 0
+rejected_bids = 0
+bid_amounts   = []
+all_bid_ids   = []
+
+if s1_proj_id:
+    for fid, rate, email in s1_fl_ids:
+        amount = rate * 100
+        r = requests.post(BASE + "/api/bids", timeout=5,
+                          json={"projectId": s1_proj_id, "freelancerId": fid,
+                                "amount": amount, "message": f"I know Java, rate=${rate}/hr"})
+        if r.status_code == 201:
+            accepted_bids += 1
+            bid_amounts.append((amount, r.json()["id"], fid))
+            all_bid_ids.append(r.json()["id"])
+        else:
+            rejected_bids += 1
+
+    for fid, rate, email in s1_fl_no_ids:
+        r = requests.post(BASE + "/api/bids", timeout=5,
+                          json={"projectId": s1_proj_id, "freelancerId": fid,
+                                "amount": rate * 80, "message": "Please hire me"})
+        if r.status_code == 400:
+            rejected_bids += 1
+        else:
+            accepted_bids += 1  # should not happen
+
+assert_field("Skilled freelancers bid accepted (expect 10)",  accepted_bids, 10)
+assert_field("Unskilled bids rejected by API (expect 10)",    rejected_bids, 10)
+
+# Accept the cheapest bid
+if bid_amounts:
+    bid_amounts.sort()
+    cheapest_amount, winning_bid_id, winner_fid = bid_amounts[0]
+    r = check("Accept cheapest bid", "patch", f"/api/bids/{winning_bid_id}/accept", 200)
+
+    # All others must be REJECTED
+    other_ids   = [b for b in all_bid_ids if b != winning_bid_id]
+    still_pending = sum(
+        1 for bid_id in other_ids
+        if requests.get(BASE + f"/api/bids/{bid_id}", timeout=5).json().get("status") != "REJECTED"
+    )
+    assert_field("All 9 other bids cascade-rejected (expect 0 still pending)", still_pending, 0)
+
+    r_proj = requests.get(BASE + f"/api/projects/{s1_proj_id}", timeout=5).json()
+    assert_field("Project status is IN_PROGRESS", r_proj.get("status"), "IN_PROGRESS")
+    assert_field("Awarded freelancer matches winner", r_proj.get("awardedFreelancerId"), winner_fid)
+
+
+# ─── SCENARIO 2 ───────────────────────────────────────────────────────────────
+scenario(
+    "Freelancer Capacity Wall — blocked after 3 concurrent active projects",
+    "A single freelancer wins 3 different projects (all IN_PROGRESS). When they\n"
+    "  try to bid on a 4th OPEN project, the API blocks them with 400."
+)
+
+r = check("Create client StartupX", "post", "/api/clients",
+          201, json={"name": "StartupX", "email": "startupx@example.com"})
+s2_client_id = r.json()["id"] if r and r.ok else None
+
+r = requests.post(BASE + "/api/freelancers", timeout=5,
+                  json={"name": "Max Load", "email": "fl-s2-max@example.com",
+                        "skills": ["Python", "Django"], "hourlyRate": 70.0})
+s2_fl_id = r.json()["id"] if r.ok else None
+print(f"  {Fore.WHITE}  Freelancer 'Max Load' created, will fill up 3 projects{Style.RESET_ALL}")
+
+if s2_client_id and s2_fl_id:
+    for i in range(1, 5):   # create 4 projects; win the first 3, blocked on 4th
+        rp = requests.post(BASE + "/api/projects", timeout=5,
+                           json={"title": f"StartupX Job {i}",
+                                 "description": f"Django project #{i}",
+                                 "clientId": s2_client_id,
+                                 "requiredSkills": ["Python", "Django"],
+                                 "budget": 2000.0 * i})
+        pid = rp.json()["id"] if rp.ok else None
+        if not pid:
+            continue
+
+        rb = requests.post(BASE + "/api/bids", timeout=5,
+                           json={"projectId": pid, "freelancerId": s2_fl_id,
+                                 "amount": 1500.0 * i, "message": "Can do!"})
+
+        if i < 4:           # projects 1-3: accept bid → IN_PROGRESS
+            bid_id_here = rb.json()["id"] if rb.ok else None
+            if bid_id_here:
+                requests.patch(BASE + f"/api/bids/{bid_id_here}/accept", timeout=5)
+            # do NOT complete — keep them IN_PROGRESS to saturate the limit
+        else:               # project 4 bid: should be blocked
+            assert_field(
+                "4th bid blocked — freelancer at max capacity (expect 400)",
+                rb.status_code, 400
+            )
+            detail = rb.json().get("error", "")
+            ok = "3 concurrent" in detail or "concurrent" in detail
+            tag = PASS if ok else FAIL
+            print(f"  {tag}  {'Error message mentions concurrent limit':<60} {Fore.GREEN if ok else Fore.RED}{detail[:60]!r}{Style.RESET_ALL}")
+            results.append(ok)
+
+
+# ─── SCENARIO 3 ───────────────────────────────────────────────────────────────
+scenario(
+    "Skill-Mismatch Filter — diverse project with rare skills",
+    "Agency Ltd posts a niche ML project requiring 'TensorFlow' and 'Rust'.\n"
+    "  5 freelancers apply: 2 have TensorFlow, 1 has Rust, 2 have neither.\n"
+    "  Only the 3 with at least one match should be allowed. The remaining 2 are blocked."
+)
+
+r = check("Create client Agency Ltd", "post", "/api/clients",
+          201, json={"name": "Agency Ltd", "email": "agency@example.com"})
+s3_client_id = r.json()["id"] if r and r.ok else None
+
+r = check("Create ML/Rust project", "post", "/api/projects",
+          201, json={"title": "AI Model Training Platform",
+                     "description": "TensorFlow pipeline with a Rust backend",
+                     "clientId": s3_client_id,
+                     "requiredSkills": ["TensorFlow", "Rust"],
+                     "budget": 12000.0})
+s3_proj_id = r.json()["id"] if r and r.ok else None
+
+s3_devs = [
+    ("fl-s3-a", "Alice TF",   ["TensorFlow", "Python"],   True),
+    ("fl-s3-b", "Bob Rust",   ["Rust", "C++"],             True),
+    ("fl-s3-c", "Carol Both", ["TensorFlow", "Rust"],      True),
+    ("fl-s3-d", "Dan PHP",    ["PHP", "Laravel"],          False),
+    ("fl-s3-e", "Eva Ruby",   ["Ruby", "Rails"],           False),
+]
+
+s3_qualifier_bids = []
+
+if s3_proj_id:
+    for slug, name, skills, should_qualify in s3_devs:
+        email = f"{slug}@example.com"
+        rfl = requests.post(BASE + "/api/freelancers", timeout=5,
+                            json={"name": name, "email": email,
+                                  "skills": skills, "hourlyRate": 80.0})
+        fid = rfl.json()["id"] if rfl.ok else None
+        if not fid:
+            continue
+
+        rb = requests.post(BASE + "/api/bids", timeout=5,
+                           json={"projectId": s3_proj_id, "freelancerId": fid,
+                                 "amount": 9000.0, "message": f"{name} applying"})
+        got_in = rb.status_code == 201
+        label  = f"{name} ({'qualified' if should_qualify else 'no match'}) bid {'accepted' if should_qualify else 'rejected'}"
+        assert_field(label, got_in, should_qualify)
+        if got_in:
+            s3_qualifier_bids.append(rb.json()["id"])
+
+assert_field("Exactly 3 qualifying bids placed", len(s3_qualifier_bids), 3)
+
+
+# ─── SCENARIO 4 ───────────────────────────────────────────────────────────────
+scenario(
+    "Client Reputation Score — tracks completed vs cancelled projects",
+    "Reputation Inc. runs 5 projects: 3 completed, 2 cancelled.\n"
+    "  Expected reputation = 3/(3+2) = 0.60."
+)
+
+r = check("Create Reputation Inc. client", "post", "/api/clients",
+          201, json={"name": "Reputation Inc.", "email": "reputation@example.com"})
+s4_client_id = r.json()["id"] if r and r.ok else None
+
+# Need a helper freelancer with matching skills
+r = requests.post(BASE + "/api/freelancers", timeout=5,
+                  json={"name": "Workhorse", "email": "fl-s4-worker@example.com",
+                        "skills": ["Go", "Docker"], "hourlyRate": 60.0})
+s4_fl_id = r.json()["id"] if r.ok else None
+
+if s4_client_id and s4_fl_id:
+    # 3 COMPLETED projects
+    for i in range(1, 4):
+        rp = requests.post(BASE + "/api/projects", timeout=5,
+                           json={"title": f"Completed Project {i}",
+                                 "description": "A Go micro-service",
+                                 "clientId": s4_client_id,
+                                 "requiredSkills": ["Go", "Docker"],
+                                 "budget": 3000.0})
+        pid = rp.json()["id"] if rp.ok else None
+        if not pid:
+            continue
+        rb = requests.post(BASE + "/api/bids", timeout=5,
+                           json={"projectId": pid, "freelancerId": s4_fl_id,
+                                 "amount": 2500.0, "message": "On it"})
+        if rb.ok:
+            requests.patch(BASE + f"/api/bids/{rb.json()['id']}/accept", timeout=5)
+            requests.patch(BASE + f"/api/projects/{pid}/complete", timeout=5)
+
+    # 2 CANCELLED projects
+    for i in range(1, 3):
+        rp = requests.post(BASE + "/api/projects", timeout=5,
+                           json={"title": f"Cancelled Project {i}",
+                                 "description": "Cancelled before start",
+                                 "clientId": s4_client_id,
+                                 "requiredSkills": ["Go"],
+                                 "budget": 500.0})
+        pid = rp.json()["id"] if rp.ok else None
+        if pid:
+            requests.patch(BASE + f"/api/projects/{pid}/cancel", timeout=5)
+
+    rc = requests.get(BASE + f"/api/clients/{s4_client_id}", timeout=5).json()
+    assert_field("completedProjects == 3",  rc.get("completedProjects"),  3)
+    assert_field("cancelledProjects == 2",  rc.get("cancelledProjects"),  2)
+    rep = round(rc.get("reputationScore", -1), 2)
+    assert_field("reputationScore == 0.60", rep, 0.60)
+
+
+# ─── SCENARIO 5 ───────────────────────────────────────────────────────────────
+scenario(
+    "Full Lifecycle with Freelancer Rating — end-to-end golden path",
+    "LifeCycle Corp hires a freelancer, completes the project, then rates them.\n"
+    "  The freelancer starts with 0 ratings. After two ratings (5 + 3) the\n"
+    "  average must be exactly 4.0 and totalRatings must be 2."
+)
+
+r = check("Create LifeCycle Corp client", "post", "/api/clients",
+          201, json={"name": "LifeCycle Corp", "email": "lifecycle@example.com"})
+s5_client_id = r.json()["id"] if r and r.ok else None
+
+r = check("Create freelancer StarDev", "post", "/api/freelancers",
+          201, json={"name": "StarDev", "email": "fl-s5-stardev@example.com",
+                     "skills": ["Kotlin", "Android"], "hourlyRate": 90.0})
+s5_fl_id = r.json()["id"] if r and r.ok else None
+
+if s5_client_id and s5_fl_id:
+    r = check("Create Android project", "post", "/api/projects",
+              201, json={"title": "Android Shopping App",
+                         "description": "Native Kotlin e-commerce app",
+                         "clientId": s5_client_id,
+                         "requiredSkills": ["Kotlin", "Android"],
+                         "budget": 8000.0})
+    s5_proj_id = r.json()["id"] if r and r.ok else None
+
+    if s5_proj_id:
+        r = check("Submit bid", "post", "/api/bids",
+                  201, json={"projectId": s5_proj_id, "freelancerId": s5_fl_id,
+                             "amount": 7500.0, "message": "5 yrs Kotlin + Android"})
+        s5_bid_id = r.json()["id"] if r and r.ok else None
+
+        if s5_bid_id:
+            check("Accept bid → project IN_PROGRESS", "patch",
+                  f"/api/bids/{s5_bid_id}/accept", 200)
+
+            rp = requests.get(BASE + f"/api/projects/{s5_proj_id}").json()
+            assert_field("Project is IN_PROGRESS after accept",
+                         rp.get("status"), "IN_PROGRESS")
+
+            check("Complete project", "patch",
+                  f"/api/projects/{s5_proj_id}/complete", 200)
+
+            # Rate the freelancer twice
+            check("Rate freelancer 5/5", "post",
+                  f"/api/freelancers/{s5_fl_id}/ratings", 200,
+                  json={"rating": 5})
+            r = check("Rate freelancer 3/5", "post",
+                      f"/api/freelancers/{s5_fl_id}/ratings", 200,
+                      json={"rating": 3})
+
+            if r and r.ok:
+                fl_data = r.json()
+                assert_field("totalRatings == 2",         fl_data.get("totalRatings"), 2)
+                avg = round(fl_data.get("averageRating", -1), 1)
+                assert_field("averageRating == 4.0",      avg, 4.0)
+
+        # Verify client completed count increased
+        rc = requests.get(BASE + f"/api/clients/{s5_client_id}").json()
+        assert_field("Client completedProjects == 1", rc.get("completedProjects"), 1)
+
 
 # ─── SUMMARY ──────────────────────────────────────────────────────────────────
 passed = sum(results)
