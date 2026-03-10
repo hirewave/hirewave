@@ -176,3 +176,17 @@ DELETE http://localhost:8080/api/todos/{{createTodo.response.body.id}}
 
 ### Delete user
 DELETE http://localhost:8080/api/users/{{createUser.response.body.id}}
+
+### 
+POST http://localhost:8080/api/projects/create
+Content-Type: application/json
+
+{
+"projectName":"Testing",
+"projectStatus":"OPEN", 
+"projectDescription": "Testam momentan", 
+"projectBudget" : 67,
+"clientId" : "69b05087e53e2027824386e1",
+"freelancerId" : "69b05070e53e2027824386e0",
+"projectSkills" : ["Php","Java","UwU","OwO"]
+}
