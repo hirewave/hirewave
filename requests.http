@@ -168,6 +168,79 @@ DELETE http://localhost:8080/api/freelancers/{{createFreelancer.response.body.id
 
 
 # ==========================================
+# Project Controller Endpoints
+# ==========================================
+
+### Get all projects
+GET http://localhost:8080/api/projects
+
+### Create a new project (run after createClient)
+# @name createProject
+POST http://localhost:8080/api/projects
+Content-Type: application/json
+
+{
+    "title": "Build a REST API",
+    "description": "We need a scalable REST API built with Java and Spring Boot",
+    "clientId": "{{createClient.response.body.id}}",
+    "requiredSkills": ["Java", "Spring Boot", "MongoDB"],
+    "budget": 5000.0
+}
+
+### Get project by ID
+GET http://localhost:8080/api/projects/{{createProject.response.body.id}}
+
+### Get projects by client ID
+GET http://localhost:8080/api/projects/by-client/{{createClient.response.body.id}}
+
+### Update project (only works when OPEN)
+PUT http://localhost:8080/api/projects/{{createProject.response.body.id}}
+Content-Type: application/json
+
+{
+    "title": "Build a Scalable REST API",
+    "description": "Updated: We need a highly scalable REST API with full test coverage",
+    "requiredSkills": ["Java", "Spring Boot", "MongoDB", "Docker"],
+    "budget": 6000.0
+}
+
+### Cancel project (OPEN → CANCELLED)
+PATCH http://localhost:8080/api/projects/{{createProject.response.body.id}}/cancel
+
+### Complete project (IN_PROGRESS → COMPLETED - run after accepting a bid)
+PATCH http://localhost:8080/api/projects/{{createProject.response.body.id}}/complete
+
+
+# ==========================================
+# Bid Controller Endpoints
+# ==========================================
+
+### Get all bids for a project
+GET http://localhost:8080/api/bids?projectId={{createProject.response.body.id}}
+
+### Submit a bid (run after createProject and createFreelancer)
+# @name createBid
+POST http://localhost:8080/api/bids
+Content-Type: application/json
+
+{
+    "projectId": "{{createProject.response.body.id}}",
+    "freelancerId": "{{createFreelancer.response.body.id}}",
+    "amount": 4500.0,
+    "message": "I have 5 years of Java + Spring Boot experience and can deliver on time."
+}
+
+### Get bid by ID
+GET http://localhost:8080/api/bids/{{createBid.response.body.id}}
+
+### Accept a bid (cascade: other bids rejected, project → IN_PROGRESS)
+PATCH http://localhost:8080/api/bids/{{createBid.response.body.id}}/accept
+
+### Reject a bid manually
+PATCH http://localhost:8080/api/bids/{{createBid.response.body.id}}/reject
+
+
+# ==========================================
 # Cleanup (run these last)
 # ==========================================
 
