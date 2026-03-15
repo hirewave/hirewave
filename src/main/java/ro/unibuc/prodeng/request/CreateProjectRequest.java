@@ -11,7 +11,7 @@ public class CreateProjectRequest {
 
 
 
-    public String geTitle(){return title;}
+    public String getTitle(){return title;}
     public void setTitle(String name){this.title=name;}
     
     public String getProjectStatus(){return projectStatus;}

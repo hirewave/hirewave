@@ -36,7 +36,7 @@ public class ProjectService {
         Project p = new Project();
         p.setBudget(request.getBudget());
         p.setDescription(request.getDescription());
-        p.setTitle(request.geTitle());
+        p.setTitle(request.getTitle());
         p.setClientId(request.getClientId());
         p.setRequiredSkills(request.getRequiredSkills());
         return projectRepository.save(p);
@@ -64,8 +64,8 @@ public class ProjectService {
         if (attempting.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
         Project p = attempting.get();
-        if (request.geTitle() != null)        
-            p.setTitle(request.geTitle());
+        if (request.getTitle() != null)        
+            p.setTitle(request.getTitle());
         if (request.getDescription() != null) 
             p.setDescription(request.getDescription());
         if (request.getBudget() != null)      
