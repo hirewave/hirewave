@@ -1,40 +1,27 @@
 package ro.unibuc.prodeng.request;
 import java.util.List;
 public class CreateProjectRequest {
-    private String projectName;
+    private String title;
     private String projectStatus;
-    private String projectDescription;
-    private Double projectBudget;
+    private String description;
+    private Double budget;
     private String clientId;
     private String FreelancerId;
-    private List<String> projectSkills;
-
-/*
-    private String id;
-    private String awardedFreelancerId;
-    private String clientId;
-    private String title;
-    private String description;
     private List<String> requiredSkills;
-    private Double Budget;
-    private String status;
-
-
-*/
 
 
 
-    public String getProjectName(){return projectName;}
-    public void setProjectName(String name){this.projectName=name;}
+    public String geTitle(){return title;}
+    public void setTitle(String name){this.title=name;}
     
     public String getProjectStatus(){return projectStatus;}
     public void setProjectStatus(String status){this.projectStatus=status;}  
 
-    public String getProjectDescription(){return projectDescription;}
-    public void setProjectDescription(String description){this.projectDescription=description;}
+    public String getDescription(){return description;}
+    public void setDescription(String description){this.description=description;}
 
-    public Double getProjectBudget(){return projectBudget;}
-    public void setProjectBudget(Double budget){this.projectBudget=budget;}
+    public Double getBudget(){return budget;}
+    public void setBudget(Double budget){this.budget=budget;}
 
     public String getClientId(){return clientId;}
     public void setClientId(String id){this.clientId=id;}
@@ -42,6 +29,6 @@ public class CreateProjectRequest {
     public String getFreelancerId(){return FreelancerId;}
     public void setFreelancerId(String id){this.FreelancerId=id;}
 
-    public List<String> getProjectSkills(){return this.projectSkills;}
-    public void setProjectSkills(List<String> Skills) {this.projectSkills=Skills;} 
+    public List<String> getRequiredSkills(){return this.requiredSkills;}
+    public void setRequiredSkills(List<String> Skills) {this.requiredSkills=Skills;} 
 }

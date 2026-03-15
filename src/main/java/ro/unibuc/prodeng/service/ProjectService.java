@@ -1,55 +1,109 @@
-
 package ro.unibuc.prodeng.service;
-import java.util.Optional;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import ro.unibuc.prodeng.model.Project;
 import ro.unibuc.prodeng.repository.ProjectRepository;
 import ro.unibuc.prodeng.response.ProjectDescriptionResponse;
 import ro.unibuc.prodeng.request.CreateProjectRequest;
 import ro.unibuc.prodeng.request.RateFreelancerRequest;
-import ro.unibuc.prodeng.repository.ClientRepository; //Needing these 2 for FK id validations
-import ro.unibuc.prodeng.repository.FreelancerRepository;//
+import ro.unibuc.prodeng.repository.ClientRepository;
+import ro.unibuc.prodeng.repository.FreelancerRepository;
 
-@Service  
+@Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
-   
+
     public ProjectService(ProjectRepository projectRepository, ClientRepository clientRepository, FreelancerRepository freelancerRepository) {
         this.projectRepository = projectRepository;
-        this.freelancerRepository= freelancerRepository;
-        this.clientRepository= clientRepository;
+        this.freelancerRepository = freelancerRepository;
+        this.clientRepository = clientRepository;
     }
 
-    public Project CreateProject(ro.unibuc.prodeng.request.CreateProjectRequest request )
-    {
-        ro.unibuc.prodeng.model.Project p = new Project();
-        try{
-            if(freelancerRepository.findById(request.getFreelancerId()).isEmpty())
-        {    
-            throw new IllegalArgumentException("FreelancerId not found!");
-        };
-        if(clientRepository.findById(request.getClientId()).isEmpty())
-        {
-                throw new IllegalArgumentException("ClientId not found!");
-        };
-        p.setBudget(request.getProjectBudget());
-        p.setDescription(request.getProjectDescription());
-        p.setTitle(request.getProjectName());
-        p.setStatus(request.getProjectStatus());
-        p.setFreelancerId(request.getFreelancerId());
+    public Project CreateProject(CreateProjectRequest request) {
+        if (clientRepository.findById(request.getClientId()).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ClientId not found!");
+        }
+        Project p = new Project();
+        p.setBudget(request.getBudget());
+        p.setDescription(request.getDescription());
+        p.setTitle(request.geTitle());
         p.setClientId(request.getClientId());
-        p.setRequiredSkills(request.getProjectSkills());
-        return projectRepository.save(p);}
-        catch(Exception e){
-            System.out.println("Something went wrong!(ProjectService/CreateProject");
-            System.out.println(e);
-            
-        };
-        return null; //TODO: Bad practice, probably.
+        p.setRequiredSkills(request.getRequiredSkills());
+        return projectRepository.save(p);
+    }
+
+    public List<Project> getProjects() {
+        return projectRepository.findAll();
+    }
+
+    public Project getProjectById(String id) {
+        Optional<Project> attempting = projectRepository.findById(id);
+        if (attempting.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
+        return attempting.get();
+    }
+
+    public List<Project> getByClientId(String clientId) {
+        return projectRepository.findAll().stream()
+            .filter(p -> clientId.equals(p.getClientId()))
+            .collect(Collectors.toList());
+    }
+
+    public Project updateProject(String id, CreateProjectRequest request) {
+        Optional<Project> attempting = projectRepository.findById(id);
+        if (attempting.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
+        Project p = attempting.get();
+        if (request.geTitle() != null)        
+            p.setTitle(request.geTitle());
+        if (request.getDescription() != null) 
+            p.setDescription(request.getDescription());
+        if (request.getBudget() != null)      
+            p.setBudget(request.getBudget());
+        if (request.getRequiredSkills() != null)      
+            p.setRequiredSkills(request.getRequiredSkills());
+        return projectRepository.save(p);
+    }
+
+    public Project completeProject(String id) {
+        Optional<Project> attempting = projectRepository.findById(id);
+        if (attempting.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
+        Project p = attempting.get();
+        p.setStatus("COMPLETED");
+        return projectRepository.save(p);
+    }
+
+    public Project cancelProject(String id) {
+        Optional<Project> attempting = projectRepository.findById(id);
+        if (attempting.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
+        Project p = attempting.get();
+        if (p.getStatus() != null && p.getStatus().name().equals("CANCELLED"))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project is already cancelled");
+        p.setStatus("CANCELLED");
+        return projectRepository.save(p);
+    }
+
+    // Called by BidService when a bid is accepted
+    public void setProjectInProgress(String projectId, String freelancerId) {
+        Optional<Project> attempting = projectRepository.findById(projectId);
+        if (attempting.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
+        Project p = attempting.get();
+        p.setStatus("IN_PROGRESS");
+        p.setFreelancerId(freelancerId);
+        projectRepository.save(p);
     }
 
     ///////TODO
@@ -64,15 +118,13 @@ public class ProjectService {
     public int countActiveProjectsForFreelancer(String freelancerId) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
-    /////
+    ///////
 
     public ProjectDescriptionResponse getProjectDescription(String projectId) {
-
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
-
         return new ProjectDescriptionResponse(
-            project.getProjectId(),
+            project.getId(),
             project.getTitle(),
             project.getDescription()
         );

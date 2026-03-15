@@ -7,46 +7,56 @@ import ro.unibuc.prodeng.model.Project;
 import ro.unibuc.prodeng.response.ProjectDescriptionResponse;
 import ro.unibuc.prodeng.service.ProjectService;
 import ro.unibuc.prodeng.request.CreateProjectRequest;
-@RestController              // this class handles HTTP requests
-@RequestMapping("api/projects") // all routes here start with api/projects
+
+import java.util.List;
+
+@RestController
+@RequestMapping("api/projects")
 public class ProjectController {
 
-    private final ro.unibuc.prodeng.service.ProjectService projectService;
+    private final ProjectService projectService;
 
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
     }
 
-    // GET /projects/{id}/description
+    @GetMapping("")
+    public ResponseEntity<List<Project>> getAllProjects() {
+        return ResponseEntity.ok(projectService.getProjects());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Project> getProjectById(@PathVariable String id) {
+        return ResponseEntity.ok(projectService.getProjectById(id));
+    }
+
+    @GetMapping("/by-client/{clientId}")
+    public ResponseEntity<List<Project>> getByClient(@PathVariable String clientId) {
+        return ResponseEntity.ok(projectService.getByClientId(clientId));
+    }
+
+    @PostMapping("")
+    public ResponseEntity<Project> createProject(@RequestBody CreateProjectRequest request) {
+        return ResponseEntity.status(201).body(projectService.CreateProject(request));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Project> updateProject(@PathVariable String id, @RequestBody CreateProjectRequest request) {
+        return ResponseEntity.ok(projectService.updateProject(id, request));
+    }
+
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<Project> completeProject(@PathVariable String id) {
+        return ResponseEntity.ok(projectService.completeProject(id));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Project> cancelProject(@PathVariable String id) {
+        return ResponseEntity.ok(projectService.cancelProject(id));
+    }
+
     @GetMapping("/{id}/description")
     public ResponseEntity<ProjectDescriptionResponse> getDescription(@PathVariable String id) {
-        System.out.println("Hello from Controller(Project, get description");
         return ResponseEntity.ok(projectService.getProjectDescription(id));
     }
-
-    @PostMapping("/create")
-    public ResponseEntity<Project> createProject(@RequestBody CreateProjectRequest request)
-    {
-        Project created=projectService.CreateProject(request);
-        System.out.println("Hello from controller!(Project, create project)");
-        return ResponseEntity.ok(created);
-    }
-
-
 }
-
-
-
-/*
-curl -H 'Content-Type: application/json' \
-      -d '{ "projectName":"Testing","projectStatus":"START", "projectDescription": "Testam momentan", "projectBudget" : 67}' \
-      -X POST \
-      https://localhost:8090/projects
-
-
-    private String projectName;
-    private String projectStatus;
-    private String projectDescription;
-    private Double projectBudget;      
-
-*/
