@@ -25,11 +25,12 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
-
-    public ProjectService(ProjectRepository projectRepository, ClientRepository clientRepository, FreelancerRepository freelancerRepository) {
+    private final ClientService clientService;
+    public ProjectService(ProjectRepository projectRepository, ClientRepository clientRepository, FreelancerRepository freelancerRepository, ClientService clientService) {
         this.projectRepository = projectRepository;
         this.freelancerRepository = freelancerRepository;
         this.clientRepository = clientRepository;
+        this.clientService = clientService;
     }
 
     public Project CreateProject(CreateProjectRequest request) {
@@ -84,6 +85,8 @@ public class ProjectService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
         Project p = attempting.get();
         p.setStatus("COMPLETED");
+        if(clientService != null)
+            clientService.incrementCompleted(p.getClientId());
         return projectRepository.save(p);
     }
 
@@ -95,6 +98,8 @@ public class ProjectService {
         if (p.getStatus() != null && p.getStatus().name().equals("CANCELLED"))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project is already cancelled");
         p.setStatus("CANCELLED");
+        if (p.getClientId() != null)
+            clientService.incrementCancelled(p.getClientId());
         return projectRepository.save(p);
     }
 
