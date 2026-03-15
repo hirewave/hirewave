@@ -42,6 +42,7 @@ public class ProjectController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Project> updateProject(@PathVariable String id, @RequestBody CreateProjectRequest request) {
+        System.out.println("(projectController)Hello from update project!");
         return ResponseEntity.ok(projectService.updateProject(id, request));
     }
 

@@ -1,7 +1,7 @@
 
 package ro.unibuc.prodeng.model;
 //import static org.hamcrest.Matchers.startsWith;
-import ro.unibuc.prodeng.model.ProjectStats;
+import ro.unibuc.prodeng.model.ProjectStatus;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -19,18 +19,18 @@ public class Project {
     private String description;
     private List<String> requiredSkills;
     private Double Budget;
-    private ProjectStats status;
+    private ProjectStatus status;
     
 
 
 
-    public Project() {this.status=ProjectStats.OPEN;}
+    public Project() {this.status=ProjectStatus.OPEN;}
     public String getId() { return id; }
     public String getDescription() { return description; }
     public String getTitle() { return title; }
     public Double getBudget() {return Budget;}
     public String getClientId() {return clientId;}
-    public ProjectStats getStatus() {return status;}
+    public ProjectStatus getStatus() {return status;}
     public List<String> getRequiredSkills() {return this.requiredSkills;}
     public String getAwardedFreelancerId() {return this.awardedFreelancerId;}
 
@@ -43,19 +43,19 @@ public class Project {
     public void setStatus(String Status){
         switch (Status) {
             case "OPEN":
-                this.status=ProjectStats.OPEN;
+                this.status=ProjectStatus.OPEN;
                 break;
             case "IN_PROGRESS":
-                this.status=ProjectStats.IN_PROGRESS;
+                this.status=ProjectStatus.IN_PROGRESS;
                 break;
             case "COMPLETED":
-                this.status=ProjectStats.COMPLETED;
+                this.status=ProjectStatus.COMPLETED;
                 break;
             case "CANCELLED":
-                this.status=ProjectStats.CANCELLED;
+                this.status=ProjectStatus.CANCELLED;
                 break;
             default:
-                this.status=ProjectStats.OPEN;
+                this.status=ProjectStatus.OPEN;
                 break;
         }
     }

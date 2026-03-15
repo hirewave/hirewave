@@ -1,5 +1,6 @@
 package ro.unibuc.prodeng.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import ro.unibuc.prodeng.model.Project;
+import ro.unibuc.prodeng.model.ProjectEntity;
+import ro.unibuc.prodeng.model.ProjectStatus;
 import ro.unibuc.prodeng.repository.ProjectRepository;
 import ro.unibuc.prodeng.response.ProjectDescriptionResponse;
 import ro.unibuc.prodeng.request.CreateProjectRequest;
@@ -64,13 +67,13 @@ public class ProjectService {
         if (attempting.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
         Project p = attempting.get();
-        if (request.getTitle() != null)        
+        if (request.getTitle() != null)
             p.setTitle(request.getTitle());
-        if (request.getDescription() != null) 
+        if (request.getDescription() != null)
             p.setDescription(request.getDescription());
-        if (request.getBudget() != null)      
+        if (request.getBudget() != null)
             p.setBudget(request.getBudget());
-        if (request.getRequiredSkills() != null)      
+        if (request.getRequiredSkills() != null)
             p.setRequiredSkills(request.getRequiredSkills());
         return projectRepository.save(p);
     }
@@ -96,7 +99,7 @@ public class ProjectService {
     }
 
     // Called by BidService when a bid is accepted
-    public void setProjectInProgress(String projectId, String freelancerId) {
+    public void markInProgress(String projectId, String freelancerId) {
         Optional<Project> attempting = projectRepository.findById(projectId);
         if (attempting.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
@@ -104,6 +107,26 @@ public class ProjectService {
         p.setStatus("IN_PROGRESS");
         p.setFreelancerId(freelancerId);
         projectRepository.save(p);
+    }
+
+    // Called by BidService — converts Project to the ProjectEntity record it expects
+    public ProjectEntity getEntityById(String id) {
+        Optional<Project> attempting = projectRepository.findById(id);
+        if (attempting.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project with id not found");
+        Project p = attempting.get();
+        ProjectStatus status = p.getStatus() == null ? ProjectStatus.OPEN
+            : ProjectStatus.valueOf(p.getStatus().name());
+        return new ProjectEntity(p.getId(), p.getTitle(), p.getDescription(),
+            p.getClientId(), p.getRequiredSkills(), p.getBudget(), status, p.getAwardedFreelancerId());
+    }
+
+    // Called by BidService to check how many of a freelancer's accepted projects are IN_PROGRESS
+    public long countInProgressByIds(Collection<String> projectIds) {
+        return projectIds.stream()
+            .map(id -> projectRepository.findById(id))
+            .filter(opt -> opt.isPresent() && opt.get().getStatus() == ProjectStatus.IN_PROGRESS)
+            .count();
     }
 
     ///////TODO
