@@ -1,25 +1,34 @@
 package ro.unibuc.prodeng.request;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
 import java.util.List;
+public class CreateProjectRequest {
+    private String title;
+    private String projectStatus;
+    private String description;
+    private Double budget;
+    private String clientId;
+    private String FreelancerId;
+    private List<String> requiredSkills;
 
-public record CreateProjectRequest(
-    @NotBlank(message = "Title is required")
-    String title,
 
-    @NotBlank(message = "Description is required")
-    String description,
 
-    @NotBlank(message = "Client ID is required")
-    String clientId,
+    public String getTitle(){return title;}
+    public void setTitle(String name){this.title=name;}
+    
+    public String getProjectStatus(){return projectStatus;}
+    public void setProjectStatus(String status){this.projectStatus=status;}  
 
-    @NotEmpty(message = "At least one required skill must be specified")
-    List<String> requiredSkills,
+    public String getDescription(){return description;}
+    public void setDescription(String description){this.description=description;}
 
-    @Positive(message = "Budget must be positive")
-    double budget
-) {}
+    public Double getBudget(){return budget;}
+    public void setBudget(Double budget){this.budget=budget;}
+
+    public String getClientId(){return clientId;}
+    public void setClientId(String id){this.clientId=id;}
+
+    public String getFreelancerId(){return FreelancerId;}
+    public void setFreelancerId(String id){this.FreelancerId=id;}
+
+    public List<String> getRequiredSkills(){return this.requiredSkills;}
+    public void setRequiredSkills(List<String> Skills) {this.requiredSkills=Skills;} 
+}

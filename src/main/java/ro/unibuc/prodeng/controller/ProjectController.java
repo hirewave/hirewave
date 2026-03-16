@@ -1,59 +1,65 @@
 package ro.unibuc.prodeng.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
-import ro.unibuc.prodeng.request.CreateProjectRequest;
-import ro.unibuc.prodeng.request.UpdateProjectRequest;
-import ro.unibuc.prodeng.response.ProjectResponse;
+import ro.unibuc.prodeng.model.Project;
+import ro.unibuc.prodeng.response.ProjectDescriptionResponse;
 import ro.unibuc.prodeng.service.ProjectService;
+import ro.unibuc.prodeng.request.CreateProjectRequest;
+
+import java.util.List;
+
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/projects")
+@RequestMapping("api/projects")
 public class ProjectController {
 
-    @Autowired
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
-    @GetMapping
-    public ResponseEntity<List<ProjectResponse>> getAllProjects() {
-        return ResponseEntity.ok(projectService.getAllProjects());
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<Project>> getAllProjects() {
+        return ResponseEntity.ok(projectService.getProjects());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponse> getProjectById(@PathVariable String id) {
+    public ResponseEntity<Project> getProjectById(@PathVariable String id) {
         return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
     @GetMapping("/by-client/{clientId}")
-    public ResponseEntity<List<ProjectResponse>> getProjectsByClientId(@PathVariable String clientId) {
-        return ResponseEntity.ok(projectService.getProjectsByClientId(clientId));
+    public ResponseEntity<List<Project>> getByClient(@PathVariable String clientId) {
+        return ResponseEntity.ok(projectService.getByClientId(clientId));
     }
 
-    @PostMapping
-    public ResponseEntity<ProjectResponse> createProject(@Valid @RequestBody CreateProjectRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(request));
+    @PostMapping("")
+    public ResponseEntity<Project> createProject(@Valid @RequestBody CreateProjectRequest request) {
+        return ResponseEntity.status(201).body(projectService.CreateProject(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProjectResponse> updateProject(
-            @PathVariable String id,
-            @Valid @RequestBody UpdateProjectRequest request) {
+    public ResponseEntity<Project> updateProject(@PathVariable String id, @Valid @RequestBody CreateProjectRequest request) {
+        System.out.println("(projectController)Hello from update project!");
         return ResponseEntity.ok(projectService.updateProject(id, request));
     }
 
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<Project> completeProject(@PathVariable String id) {
+        return ResponseEntity.ok(projectService.completeProject(id));
+    }
+
     @PatchMapping("/{id}/cancel")
-    public ResponseEntity<ProjectResponse> cancelProject(@PathVariable String id) {
+    public ResponseEntity<Project> cancelProject(@PathVariable String id) {
         return ResponseEntity.ok(projectService.cancelProject(id));
     }
 
-    @PatchMapping("/{id}/complete")
-    public ResponseEntity<ProjectResponse> completeProject(@PathVariable String id) {
-        return ResponseEntity.ok(projectService.completeProject(id));
+    @GetMapping("/{id}/description")
+    public ResponseEntity<ProjectDescriptionResponse> getDescription(@PathVariable String id) {
+        return ResponseEntity.ok(projectService.getProjectDescription(id));
     }
 }

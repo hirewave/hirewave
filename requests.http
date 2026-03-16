@@ -249,3 +249,28 @@ DELETE http://localhost:8080/api/todos/{{createTodo.response.body.id}}
 
 ### Delete user
 DELETE http://localhost:8080/api/users/{{createUser.response.body.id}}
+
+### 
+POST http://localhost:8080/api/projects
+Content-Type: application/json
+
+{
+"title":"Testing",
+"projectStatus":"OPEN", 
+"description": "Testam momentan", 
+"budget" : 67,
+"clientId" : "69b05087e53e2027824386e1",
+"FreelancerId" : "69b05070e53e2027824386e0",
+"requiredSkills" : ["Php","Java","UwU","OwO"]
+}
+
+###
+PUT http://localhost:8080/api/projects/69b046e173a2833d9a1acbfe
+Content-Type: application/json
+
+{
+"title":"No longer testing!"
+}
+
+###
+PATCH  http://localhost:8080/api/projects/69b046e173a2833d9a1acbfe/complete
