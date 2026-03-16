@@ -14,6 +14,7 @@ import ro.unibuc.prodeng.model.ProjectEntity;
 import ro.unibuc.prodeng.model.ProjectStatus;
 import ro.unibuc.prodeng.repository.ProjectRepository;
 import ro.unibuc.prodeng.response.ProjectDescriptionResponse;
+import ro.unibuc.prodeng.response.ProjectResponse;
 import ro.unibuc.prodeng.request.CreateProjectRequest;
 import ro.unibuc.prodeng.request.RateFreelancerRequest;
 import ro.unibuc.prodeng.repository.ClientRepository;
@@ -26,11 +27,13 @@ public class ProjectService {
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
     private final ClientService clientService;
-    public ProjectService(ProjectRepository projectRepository, ClientRepository clientRepository, FreelancerRepository freelancerRepository, ClientService clientService) {
+    private final FreelancerService freelancerService;
+    public ProjectService(ProjectRepository projectRepository, ClientRepository clientRepository, FreelancerRepository freelancerRepository, ClientService clientService, FreelancerService freelancerService) {
         this.projectRepository = projectRepository;
         this.freelancerRepository = freelancerRepository;
         this.clientRepository = clientRepository;
         this.clientService = clientService;
+        this.freelancerService = freelancerService;
     }
 
     public Project CreateProject(CreateProjectRequest request) {
@@ -134,19 +137,30 @@ public class ProjectService {
             .count();
     }
 
-    ///////TODO
     public void assignProject(String Projectid, String freelancerId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Project existing = getProjectById(Projectid);
+        if (existing.getStatus() != ProjectStatus.OPEN) {
+            throw new IllegalArgumentException("Can only start projects with OPEN status");
+        }
+        existing.setFreelancerId(freelancerId);
+        existing.setStatus("IN_PROGRESS");
+        projectRepository.save(existing);
     }
 
     public void rateFreelancer(String projectId, RateFreelancerRequest request) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        ProjectEntity project = getEntityById(projectId);
+        if (project.status() != ProjectStatus.COMPLETED) {
+            throw new IllegalArgumentException("Can only rate freelancers on completed projects");
+        }
+        if (project.awardedFreelancerId() == null) {
+            throw new IllegalArgumentException("No freelancer awarded for this project");
+        }
+        freelancerService.addRating(project.awardedFreelancerId(), request.rating());
     }
 
-    public int countActiveProjectsForFreelancer(String freelancerId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public long countActiveProjectsForFreelancer(String freelancerId) {
+        return projectRepository.countByAwardedFreelancerIdAndStatus(freelancerId, ProjectStatus.IN_PROGRESS);
     }
-    ///////
 
     public ProjectDescriptionResponse getProjectDescription(String projectId) {
         Project project = projectRepository.findById(projectId)
