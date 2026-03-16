@@ -131,10 +131,13 @@ public class ProjectService {
 
     // Called by BidService to check how many of a freelancer's accepted projects are IN_PROGRESS
     public long countInProgressByIds(Collection<String> projectIds) {
-        return projectIds.stream()
-            .map(id -> projectRepository.findById(id))
-            .filter(opt -> opt.isPresent() && opt.get().getStatus() == ProjectStatus.IN_PROGRESS)
-            .count();
+        long count = 0L;
+        for (Project project : projectRepository.findAllById(projectIds)) {
+            if (project.getStatus() == ProjectStatus.IN_PROGRESS) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public void assignProject(String Projectid, String freelancerId) {
