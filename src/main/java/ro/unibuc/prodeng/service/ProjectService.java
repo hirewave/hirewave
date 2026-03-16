@@ -61,10 +61,10 @@ public class ProjectService {
     }
 
     public List<Project> getByClientId(String clientId) {
-        return projectRepository.findAll().stream()
-            .filter(p -> clientId.equals(p.getClientId()))
-            .collect(Collectors.toList());
+        return projectRepository.findByClientId(clientId);
     }
+
+    
 
     public Project updateProject(String id, CreateProjectRequest request) {
         Optional<Project> attempting = projectRepository.findById(id);
