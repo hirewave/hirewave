@@ -10,6 +10,8 @@ import ro.unibuc.prodeng.request.CreateProjectRequest;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("api/projects")
 public class ProjectController {
@@ -36,12 +38,12 @@ public class ProjectController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Project> createProject(@RequestBody CreateProjectRequest request) {
+    public ResponseEntity<Project> createProject(@Valid @RequestBody CreateProjectRequest request) {
         return ResponseEntity.status(201).body(projectService.CreateProject(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable String id, @RequestBody CreateProjectRequest request) {
+    public ResponseEntity<Project> updateProject(@PathVariable String id, @Valid @RequestBody CreateProjectRequest request) {
         System.out.println("(projectController)Hello from update project!");
         return ResponseEntity.ok(projectService.updateProject(id, request));
     }
