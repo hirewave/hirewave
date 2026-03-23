@@ -1,6 +1,8 @@
 package ro.unibuc.prodeng.service;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,6 +107,33 @@ public class ProjectService {
             clientService.incrementCancelled(p.getClientId());
         return projectRepository.save(p);
     }
+
+    public Map<String, Double> getListedSkills() {
+    List<Project> projects = projectRepository.findAll();
+    Map<String, Double> skillBudgetMap = new HashMap<>();
+
+    for (Project p : projects) {
+        if (p.getStatus() != ProjectStatus.COMPLETED) {
+            continue;
+        }
+        if (p.getRequiredSkills() == null) {
+            continue;
+        }
+
+        double budget = p.getBudget() != null ? p.getBudget() : 0.0;
+
+        for (String skill : p.getRequiredSkills()) {
+            if (skillBudgetMap.containsKey(skill)) {
+                skillBudgetMap.put(skill, skillBudgetMap.get(skill) + budget);
+            } else {
+                skillBudgetMap.put(skill, budget);
+            }
+        }
+    }
+
+    return skillBudgetMap;
+}
+
 
     // Called by BidService when a bid is accepted
     public void markInProgress(String projectId, String freelancerId) {
