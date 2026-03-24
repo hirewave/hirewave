@@ -189,7 +189,7 @@ class BidControllerIntegrationTest extends IntegrationTestBase {
         // Act & Assert
         mockMvc.perform(get("/api/bids/{id}", unknownBidId))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Bid " + unknownBidId));
+                .andExpect(jsonPath("$.error").value("Entity: Bid " + unknownBidId + " was not found"));
     }
 
     @Test
