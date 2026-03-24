@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-HireWave API end-to-end smoke test.
-Covers every endpoint in requests.http with real payloads.
-Run:  python3 test_requests.py
+HireWave API request and load-style test runner.
+Used as a lightweight performance-oriented tester for API flows.
+Run:  python3 testing/performance/bids_performance_tester.py
 """
 import sys
 import requests
