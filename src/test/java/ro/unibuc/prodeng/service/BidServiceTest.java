@@ -50,6 +50,29 @@ class BidServiceTest {
     private final CreateBidRequest validRequest =
             new CreateBidRequest("pid", "fid", 1500.0, "I can handle this");
 
+    @Test
+    void getBidById_existingBid_returnsBid() {
+        // Arrange
+        BidEntity bid = new BidEntity("bid1", "proj1", "free1", 100.0, "msg", BidStatus.PENDING);
+        when(bidRepository.findById("bid1")).thenReturn(Optional.of(bid));
+
+        // Act
+        BidResponse result = bidService.getBidById("bid1");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("bid1", result.id());
+    }
+
+    @Test
+    void getBidById_nonExistingBid_throwsEntityNotFoundException() {
+        // Arrange
+        when(bidRepository.findById("nonexist")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> bidService.getBidById("nonexist"));
+    }
+
     // ─── submitBid ────────────────────────────────────────────────────────────
 
     @Test
@@ -102,6 +125,7 @@ class BidServiceTest {
 
     @Test
     void submitBid_skillMismatch_throwsIllegalArgumentException() {
+        // Arrange
         FreelancerEntity noMatchFreelancer = new FreelancerEntity(
                 "fid", "Dev User", "dev@example.com",
                 List.of("PHP", "Ruby"), 80.0, 0, 0);
@@ -142,7 +166,11 @@ class BidServiceTest {
         when(projectService.getEntityById("pid")).thenReturn(openProject);
         when(bidRepository.save(any(BidEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
+
+        // Act
         BidResponse result = bidService.acceptBid("bid1");
+
+        // Assert
 
         assertEquals(BidStatus.ACCEPTED, result.status());
         verify(bidRepository).rejectAllPendingBidsExcept("pid", "bid1");
@@ -150,7 +178,21 @@ class BidServiceTest {
     }
 
     @Test
+    void acceptBid_projectNotOpen_throwsIllegalArgumentException() {
+        // Arrange
+        BidEntity bid = new BidEntity("bid1", "proj1", "free1", 100.0, "msg", BidStatus.PENDING);
+        when(bidRepository.findById("bid1")).thenReturn(Optional.of(bid));
+        ProjectEntity closedProject = new ProjectEntity("proj1", "Title", "Desc", "client1", List.of(), 500.0, ProjectStatus.IN_PROGRESS, null);
+        when(projectService.getEntityById("proj1")).thenReturn(closedProject);
+
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> bidService.acceptBid("bid1"));
+    }
+
+    @Test
     void acceptBid_alreadyAccepted_throwsIllegalArgumentException() {
+        // Arrange
         BidEntity acceptedBid = new BidEntity("bid1", "pid", "fid", 1500.0, "my bid", BidStatus.ACCEPTED);
         when(bidRepository.findById("bid1")).thenReturn(Optional.of(acceptedBid));
 
@@ -162,8 +204,11 @@ class BidServiceTest {
 
     @Test
     void acceptBid_bidNotFound_throwsEntityNotFoundException() {
+        // Arrange
         when(bidRepository.findById("unknown")).thenReturn(Optional.empty());
 
+
+        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> bidService.acceptBid("unknown"));
     }
 
@@ -175,7 +220,11 @@ class BidServiceTest {
         when(bidRepository.findById("bid1")).thenReturn(Optional.of(pendingBid));
         when(bidRepository.save(any(BidEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
+
+        // Act
         BidResponse result = bidService.rejectBid("bid1");
+
+        // Assert
 
         assertEquals(BidStatus.REJECTED, result.status());
         verify(bidRepository).save(argThat(b -> b.status() == BidStatus.REJECTED));
@@ -183,6 +232,7 @@ class BidServiceTest {
 
     @Test
     void rejectBid_alreadyRejected_throwsIllegalArgumentException() {
+        // Arrange
         BidEntity rejectedBid = new BidEntity("bid1", "pid", "fid", 1500.0, "my bid", BidStatus.REJECTED);
         when(bidRepository.findById("bid1")).thenReturn(Optional.of(rejectedBid));
 
@@ -196,6 +246,7 @@ class BidServiceTest {
 
     @Test
     void getBidsForProject_existingProject_returnsBids() {
+        // Arrange
         BidEntity bid = new BidEntity("bid1", "pid", "fid", 1500.0, "my bid", BidStatus.PENDING);
         when(projectService.getEntityById("pid")).thenReturn(openProject);
         when(bidRepository.findByProjectId("pid")).thenReturn(List.of(bid));

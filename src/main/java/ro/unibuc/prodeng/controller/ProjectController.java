@@ -7,7 +7,7 @@ import ro.unibuc.prodeng.model.Project;
 import ro.unibuc.prodeng.response.ProjectDescriptionResponse;
 import ro.unibuc.prodeng.service.ProjectService;
 import ro.unibuc.prodeng.request.CreateProjectRequest;
-
+import java.util.Map;
 import java.util.List;
 
 import jakarta.validation.Valid;
@@ -57,7 +57,10 @@ public class ProjectController {
     public ResponseEntity<Project> cancelProject(@PathVariable String id) {
         return ResponseEntity.ok(projectService.cancelProject(id));
     }
-
+    @GetMapping("/skills/statistics")
+    public ResponseEntity<Map<String, Double>> getListedSkills() {
+        return ResponseEntity.ok(projectService.getListedSkills());
+    }
     @GetMapping("/{id}/description")
     public ResponseEntity<ProjectDescriptionResponse> getDescription(@PathVariable String id) {
         return ResponseEntity.ok(projectService.getProjectDescription(id));
