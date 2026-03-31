@@ -104,19 +104,15 @@ configurations {
 	}
 }
 
-task testE2E() {
+task testE2E(type: JavaExec) {
 	dependsOn assemble, testClasses
-	doLast {
-		javaexec {
-			mainClass.set("io.cucumber.core.cli.Main")
-			classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-			args = [
-					'--plugin', 'pretty',
-					'--plugin', 'html:build/reports/cucumber/cucumber-report.html',
-					'--glue', 'ro.unibuc.prodeng.e2e',
-					'src/test/resources']
-		}
-	}
+	mainClass.set("io.cucumber.core.cli.Main")
+	classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+	args = [
+			'--plugin', 'pretty',
+			'--plugin', 'html:build/reports/cucumber/cucumber-report.html',
+			'--glue', 'ro.unibuc.prodeng.e2e',
+			'src/test/resources']
 }
 
 asciidoctor {

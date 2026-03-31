@@ -17,19 +17,33 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Tag("IntegrationTest")
 public abstract class IntegrationTestBase {
+    private static final String DEFAULT_LOCAL_MONGO_URL =
+            "mongodb://root:example@localhost:27017";
+
     private static final MongoDBContainer mongoDBContainer =
             new MongoDBContainer("mongo:6.0.20")
                     .withExposedPorts(27017)
                     .withSharding()
                     .withLabel("ro.unibuc.prodeng", "integration-test-mongo");
 
+    private static String resolvedMongoUrl = null;
+
     static {
-        mongoDBContainer.start();
+        try {
+            mongoDBContainer.start();
+            resolvedMongoUrl = "mongodb://localhost:" + mongoDBContainer.getMappedPort(27017);
+        } catch (Exception ex) {
+            String fromEnv = System.getenv("MONGODB_CONECTION_URL");
+            resolvedMongoUrl = (fromEnv == null || fromEnv.isBlank())
+                    ? DEFAULT_LOCAL_MONGO_URL
+                    : fromEnv;
+            System.out.println("[IntegrationTestBase] Docker/Testcontainers unavailable. "
+                    + "Falling back to Mongo URL: " + resolvedMongoUrl);
+        }
     }
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        String mongoUrl = "mongodb://localhost:" + mongoDBContainer.getMappedPort(27017);
-        registry.add("mongodb.connection.url", () -> mongoUrl);
+        registry.add("mongodb.connection.url", () -> resolvedMongoUrl);
     }
 }
