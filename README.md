@@ -3,7 +3,7 @@
 ## Team
 - **Team Name:** Hirewave
 - **Members:**
-  - Opran Andrei - Freelancer profiles (CRUD), skills + hourly rate validation; Client profiles (CRUD); owns `Freelancer` + `Client` domain + API. **Core Logic**: Freelancer availability limits (blocks new bids if working on max concurrent projects), Freelancer rating system (average score updated on project completion, visible to clients), Freelancer skill-based bid eligibility (freelancer must share at least one required skill with the project to bid), and Client reputation score (derived from completed vs. cancelled project ratio)
+  - Opran Andrei - Freelancer profiles (CRUD), skills + hourly rate validation; Client profiles (CRUD); owns `Freelancer` + `Client` domain + API. **Core Logic**: Freelancer availability limits (blocks new bids if working on max concurrent projects), Freelancer rating system (average score updated on project completion, visible to clients), Freelancer skill-based bid eligibility (freelancer must share at least one required skill with the project to bid), and Client reputation score (derived from completed vs. cancelled project ratio).
   - Prizlopan Iustin-George - Projects (CRUD), project status machine + validations (restrict edits by status); owns `Project` domain + API
   - Eftimie Traian - Bids (core business logic), prevent duplicate bids, accept/reject flow (cascade: accept → reject others, project → IN_PROGRESS); owns `Bid` domain + API
 
