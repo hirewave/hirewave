@@ -30,7 +30,9 @@ public abstract class IntegrationTestBase {
 
     static {
         try {
-            mongoDBContainer.start();
+        if (System.getenv("MONGODB_CONECTION_URL") == null) {
+        mongoDBContainer.start();}
+            //mongoDBContainer.start();
             resolvedMongoUrl = "mongodb://localhost:" + mongoDBContainer.getMappedPort(27017);
         } catch (Exception ex) {
             String fromEnv = System.getenv("MONGODB_CONECTION_URL");
@@ -44,6 +46,9 @@ public abstract class IntegrationTestBase {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("mongodb.connection.url", () -> resolvedMongoUrl);
+    if (mongoDBContainer.isRunning()) {
+        String mongoUrl = "mongodb://localhost:" + mongoDBContainer.getMappedPort(27017);
+        registry.add("mongodb.connection.url", () -> mongoUrl);
+    }
     }
 }
