@@ -28,7 +28,7 @@ pipeline {
         stage('Version & Tag') {
             steps {
                 script {
-                    sh 'git fetch --tag'
+                    sh 'git fetch --tags'
                     env.MAJOR_VERSION = sh(
                         script: 'git tag | sort -V | tail -1 | cut -d . -f 1',
                         returnStdout: true
@@ -75,7 +75,13 @@ pipeline {
 
     post {
         always {
-            sh 'docker logout'
+            script {
+                try {
+                    sh 'docker logout || true'
+                } catch (ignored) {
+                    echo 'Skipping docker logout'
+                }
+            }
         }
     }
 }
