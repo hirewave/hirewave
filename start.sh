@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-JENKINS_CONFIG_ROOT="${JENKINS_CONFIG_ROOT:-/workspaces/jenkins_config}"
+JENKINS_CONFIG_ROOT="${JENKINS_CONFIG_ROOT:-/home/traian/code/jenkins-save}"
 
 echo "[start] Using JENKINS_CONFIG_ROOT=$JENKINS_CONFIG_ROOT"
 mkdir -p "$JENKINS_CONFIG_ROOT"

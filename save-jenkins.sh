@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SOURCE_JENKINS_HOME="/workspaces/jenkins_config"
+DEFAULT_SOURCE_JENKINS_HOME="/workspaces/jenkins_config"
 TARGET_JENKINS_HOME="/home/traian/code/jenkins-save"
 
 log() {
   printf '[save-jenkins] %s\n' "$*"
+}
+
+detect_active_jenkins_home() {
+  docker inspect hirewave-jenkins-1 --format '{{range .Mounts}}{{println .Source "->" .Destination}}{{end}}' 2>/dev/null \
+    | awk -F'->' '$2 ~ /\/var\/jenkins_home/ {gsub(/^[ \t]+|[ \t]+$/, "", $1); print $1; exit}'
 }
 
 sync_with_docker_fallback() {
@@ -30,9 +35,19 @@ has_jenkins_markers() {
     [[ -d "$dir/users" ]]
 }
 
+SOURCE_JENKINS_HOME="${SOURCE_JENKINS_HOME:-$DEFAULT_SOURCE_JENKINS_HOME}"
+
+ACTIVE_JENKINS_HOME="$(detect_active_jenkins_home || true)"
+if [[ -n "$ACTIVE_JENKINS_HOME" ]]; then
+  log "Detected active Jenkins mount source: $ACTIVE_JENKINS_HOME"
+  SOURCE_JENKINS_HOME="$ACTIVE_JENKINS_HOME"
+else
+  log "Could not detect active Jenkins mount; using default source: $SOURCE_JENKINS_HOME"
+fi
+
 if [[ "$SOURCE_JENKINS_HOME" == "$TARGET_JENKINS_HOME" ]]; then
-  log "Refusing to sync: source and destination are the same path"
-  exit 1
+  log "Jenkins is already using persistent path ($TARGET_JENKINS_HOME); nothing to sync"
+  exit 0
 fi
 
 if [[ ! -d "$SOURCE_JENKINS_HOME" ]]; then
