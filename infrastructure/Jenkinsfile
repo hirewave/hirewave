@@ -50,15 +50,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_HUB_USERNAME/prod-eng-img:$IMAGE_TAG .'
+                sh 'docker build -t masacru/prod-eng-img:$IMAGE_TAG .'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 sh '''
-                    echo $DOCKER_PASSWORD_PSW | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-                    docker push $DOCKER_HUB_USERNAME/prod-eng-img:$IMAGE_TAG
+                    echo $DOCKER_PASSWORD_PSW | docker login -u masacru --password-stdin
+                    docker push masacru/prod-eng-img:$IMAGE_TAG
                 '''
             }
         }

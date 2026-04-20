@@ -22,12 +22,28 @@ sync_dir_non_destructive() {
   local src="$1"
   local dst="$2"
 
+  sync_with_docker_fallback() {
+    log "Retrying sync using Docker helper container to bypass host file permission restrictions"
+    echo "CMD: docker run --rm -v $src:/src:ro -v $dst:/dst busybox sh -lc cp -a /src/. /dst/"
+    docker run --rm \
+      -v "$src":/src:ro \
+      -v "$dst":/dst \
+      busybox \
+      sh -lc 'cp -a /src/. /dst/'
+  }
+
   if command -v rsync >/dev/null 2>&1; then
     log "Syncing with rsync -a from $src to $dst"
-    rsync -a "$src/" "$dst/"
+    if ! rsync -a "$src/" "$dst/"; then
+      log "rsync failed; attempting Docker fallback"
+      sync_with_docker_fallback
+    fi
   else
     log "rsync not found; syncing with cp -a from $src to $dst"
-    cp -a "$src/." "$dst/"
+    if ! cp -a "$src/." "$dst/"; then
+      log "cp -a failed; attempting Docker fallback"
+      sync_with_docker_fallback
+    fi
   fi
 }
 

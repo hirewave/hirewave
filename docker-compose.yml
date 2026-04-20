@@ -13,7 +13,10 @@ services:
     profiles:
       - "prod-eng-service"
   jenkins:
-    image: jenkins/jenkins
+    image: hirewave-jenkins-img
+    build:
+      context: .
+      dockerfile: infrastructure/jenkins/Dockerfile
     ports:
       - 8082:8080
       - 50000:50000
@@ -21,7 +24,6 @@ services:
     volumes:
       - ${JENKINS_CONFIG_ROOT:-/workspaces/jenkins_config}:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
       - ./Dockerfile:/Dockerfile
       - /usr/libexec/docker/cli-plugins/docker-compose:/usr/libexec/docker/cli-plugins/docker-compose
     profiles:
