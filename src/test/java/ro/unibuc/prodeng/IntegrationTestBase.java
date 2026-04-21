@@ -26,24 +26,17 @@ public abstract class IntegrationTestBase {
                     .withSharding()
                     .withLabel("ro.unibuc.prodeng", "integration-test-mongo");
 
-    private static String resolvedMongoUrl = null;
-
     static {
-        try {
+        if (System.getenv("MONGODB_CONECTION_URL") == null) {
             mongoDBContainer.start();
-            resolvedMongoUrl = "mongodb://localhost:" + mongoDBContainer.getMappedPort(27017);
-        } catch (Exception ex) {
-            String fromEnv = System.getenv("MONGODB_CONECTION_URL");
-            resolvedMongoUrl = (fromEnv == null || fromEnv.isBlank())
-                    ? DEFAULT_LOCAL_MONGO_URL
-                    : fromEnv;
-            System.out.println("[IntegrationTestBase] Docker/Testcontainers unavailable. "
-                    + "Falling back to Mongo URL: " + resolvedMongoUrl);
         }
     }
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("mongodb.connection.url", () -> resolvedMongoUrl);
+        if (mongoDBContainer.isRunning()) {
+            String mongoUrl = "mongodb://localhost:" + mongoDBContainer.getMappedPort(27017);
+            registry.add("mongodb.connection.url", () -> mongoUrl);
+        }
     }
 }

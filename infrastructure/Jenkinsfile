@@ -63,6 +63,27 @@ pipeline {
             }
         }
 
+        stage('Deploy Application') {
+            steps {
+                script {
+                    sh '''
+                        docker ps -q --filter "name=prod-eng" | xargs -r docker stop
+                        docker ps -q --filter "name=mongo" | xargs -r docker stop
+                    '''
+                    sh """
+                        PROD_ENG_IMAGE=${DOCKER_HUB_USERNAME}/prod-eng-img:${env.IMAGE_TAG} docker compose up -d prod-eng mongo
+                    """
+                    sleep 30
+                }
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                sh 'MONGODB_CONECTION_URL=mongodb://root:example@host.docker.internal:27017 ./gradlew testIT'
+            }
+        }
+
         stage('Tag Release') {
             steps {
                 sh '''
