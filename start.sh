@@ -1,13 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-JENKINS_CONFIG_ROOT="${JENKINS_CONFIG_ROOT:-/home/traian/code/jenkins-save}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REQUESTED_JENKINS_CONFIG_ROOT="${JENKINS_CONFIG_ROOT:-./jenkins_config}"
+
+case "$REQUESTED_JENKINS_CONFIG_ROOT" in
+	"$SCRIPT_DIR/jenkins_config"|"$SCRIPT_DIR/jenkins_config/")
+		JENKINS_CONFIG_ROOT="./jenkins_config"
+		;;
+	/*)
+		if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+			echo "[start] Refusing absolute Linux JENKINS_CONFIG_ROOT under WSL: $REQUESTED_JENKINS_CONFIG_ROOT" >&2
+			echo "[start] Use ./jenkins_config so Docker Desktop mounts the real WSL project folder." >&2
+			exit 1
+		fi
+
+		JENKINS_CONFIG_ROOT="$REQUESTED_JENKINS_CONFIG_ROOT"
+		;;
+	*)
+		JENKINS_CONFIG_ROOT="$REQUESTED_JENKINS_CONFIG_ROOT"
+		;;
+esac
 
 echo "[start] Using JENKINS_CONFIG_ROOT=$JENKINS_CONFIG_ROOT"
-mkdir -p "$JENKINS_CONFIG_ROOT"
+mkdir -p "${SCRIPT_DIR}/jenkins_config"
 
-ENV_FILE="$(mktemp)"
-trap 'rm -f "$ENV_FILE"' EXIT
+ENV_FILE=".env"
 printf 'JENKINS_CONFIG_ROOT=%s\n' "$JENKINS_CONFIG_ROOT" > "$ENV_FILE"
 
-docker compose --env-file "$ENV_FILE" --profile mongo --profile prod-eng-service up -d
+docker compose --profile mongo --profile prod-eng-service up -d

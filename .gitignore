@@ -48,4 +48,22 @@ infrastructure/loki/durable/
 ### Claude Code ###
 .claude/
 
-jenkins_config/
+### Jenkins persistent local state ###
+/jenkins_config/
+/jenkins-save-backup-*/
+/.env
+/.jenkins-backup-worker.log
+/.jenkins-backup-worker.pid
+/.jenkins-backup-worker.py
+/.jenkins-admin-password
+
+
+### Codex
+.codex/
+.codex
+
+### Agents
+.agents/
+
+### Github Copilot
+.github/

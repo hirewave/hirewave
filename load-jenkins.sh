@@ -3,7 +3,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_JENKINS_HOME="/workspaces/jenkins_config"
-TARGET_JENKINS_HOME="/home/traian/code/jenkins-save"
+TARGET_JENKINS_HOME="${REPO_DIR}/jenkins_config"
 
 log() {
   printf '[load-jenkins] %s\n' "$*"
