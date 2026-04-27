@@ -65,16 +65,32 @@ pipeline {
 
         stage('Deploy Application') {
             steps {
-                script {
-                    sh '''
-                        docker ps -q --filter "name=prod-eng" | xargs -r docker stop
-                        docker ps -q --filter "name=mongo" | xargs -r docker stop
-                    '''
-                    sh """
-                        PROD_ENG_IMAGE=${DOCKER_HUB_USERNAME}/prod-eng-img:${env.IMAGE_TAG} docker compose up -d prod-eng mongo
-                    """
+                sh '''
+                    docker rm -f hirewave-prod-eng-1 hirewave-mongo-1 || true
+                    docker network inspect hirewave_default >/dev/null 2>&1 || docker network create hirewave_default
+
+                    docker run -d \
+                        --name hirewave-mongo-1 \
+                        --network hirewave_default \
+                        --network-alias mongo \
+                        -p 27017:27017 \
+                        -e MONGO_INITDB_ROOT_USERNAME=root \
+                        -e MONGO_INITDB_ROOT_PASSWORD=example \
+                        --restart always \
+                        mongo:6.0.20
+
+                    docker run -d \
+                        --name hirewave-prod-eng-1 \
+                        --network hirewave_default \
+                        -p 8080:8080 \
+                        -p 5005:5005 \
+                        -e ENVIRONMENT_NAME=local \
+                        -e MONGODB_CONECTION_URL=mongodb://root:example@mongo:27017/ \
+                        --restart always \
+                        ${DOCKER_HUB_USERNAME}/prod-eng-img:$IMAGE_TAG
+
                     sleep 30
-                }
+                '''
             }
         }
 
@@ -97,14 +113,7 @@ pipeline {
     post {
         always {
             junit '**/build/test-results/**/*.xml'
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: false,
-                keepAll: true,
-                reportDir: 'build/reports/tests/test',
-                reportFiles: 'index.html',
-                reportName: 'Test Report'
-            ])
+            archiveArtifacts artifacts: 'build/reports/tests/test/**', allowEmptyArchive: true
             script {
                 try {
                     sh 'docker logout || true'

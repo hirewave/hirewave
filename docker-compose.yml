@@ -24,7 +24,6 @@ services:
       - ${JENKINS_CONFIG_ROOT:-./jenkins_config}:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - ./Dockerfile:/Dockerfile
-      - /usr/libexec/docker/cli-plugins/docker-compose:/usr/libexec/docker/cli-plugins/docker-compose
     profiles:
       - "prod-eng-service"
     user: 0:0
