@@ -22,13 +22,17 @@ public class MetricsService {
 
     public MetricsService(MeterRegistry registry, ProjectRepository projectRepository) {
         this.registry = registry;
-        this.usersCreatedCounter = Counter.builder("app_users_created_total")
+        this.usersCreatedCounter = Counter.builder("app_users_created")
                 .description("Total number of users created")
                 .tag("type", "business")
                 .register(registry);
-        this.userCreationFailedCounter = Counter.builder("app_user_creation_failed_total")
+        this.userCreationFailedCounter = Counter.builder("app_user_creation_failed")
                 .description("Total number of failed user creation attempts")
                 .tag("type", "error")
+                .register(registry);
+        Counter.builder("app_errors")
+                .description("Total application errors by exception type")
+                .tag("exception", "none")
                 .register(registry);
         this.userLookupTimer = Timer.builder("app_user_lookup_duration_seconds")
                 .description("Time taken to look up a user")
@@ -52,7 +56,7 @@ public class MetricsService {
     }
 
     public void recordError(String exceptionType) {
-        registry.counter("app_errors_total", "exception", exceptionType).increment();
+        registry.counter("app_errors", "exception", exceptionType).increment();
     }
 
     public Timer.Sample startUserLookupTimer() {
