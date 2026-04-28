@@ -13,6 +13,7 @@ import ro.unibuc.prodeng.request.RateFreelancerRequest;
 import ro.unibuc.prodeng.request.UpdateFreelancerRequest;
 import ro.unibuc.prodeng.response.FreelancerResponse;
 import ro.unibuc.prodeng.service.FreelancerService;
+import ro.unibuc.prodeng.service.MetricsService;
 
 @RestController
 @RequestMapping("/api/freelancers")
@@ -21,6 +22,9 @@ public class FreelancerController {
     @Autowired
     private FreelancerService freelancerService;
 
+    @Autowired
+    private MetricsService metricsService;
+
     @GetMapping
     public ResponseEntity<List<FreelancerResponse>> getAllFreelancers() {
         return ResponseEntity.ok(freelancerService.getAllFreelancers());
@@ -28,12 +32,21 @@ public class FreelancerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<FreelancerResponse> getFreelancerById(@PathVariable String id) {
-        return ResponseEntity.ok(freelancerService.getFreelancerById(id));
+        return metricsService.getFreelancerLookupTimer().record(() ->
+            ResponseEntity.ok(freelancerService.getFreelancerById(id))
+        );
     }
 
     @PostMapping
     public ResponseEntity<FreelancerResponse> createFreelancer(@Valid @RequestBody CreateFreelancerRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(freelancerService.createFreelancer(request));
+        try {
+            FreelancerResponse response = freelancerService.createFreelancer(request);
+            metricsService.recordFreelancerCreated();
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            metricsService.recordFreelancerCreationFailed();
+            throw e;
+        }
     }
 
     @PutMapping("/{id}")
@@ -53,6 +66,12 @@ public class FreelancerController {
     public ResponseEntity<FreelancerResponse> addRating(
             @PathVariable String id,
             @Valid @RequestBody RateFreelancerRequest request) {
-        return ResponseEntity.ok(freelancerService.addRating(id, request.rating()));
+        
+        FreelancerResponse response = freelancerService.addRating(id, request.rating());
+        
+        // Record the new rating metrics
+        metricsService.recordFreelancerRating(request.rating());
+        
+        return ResponseEntity.ok(response);
     }
 }

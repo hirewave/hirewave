@@ -31,12 +31,21 @@ import ro.unibuc.prodeng.request.CreateClientRequest;
 import ro.unibuc.prodeng.request.UpdateClientRequest;
 import ro.unibuc.prodeng.response.ClientResponse;
 import ro.unibuc.prodeng.service.ClientService;
+import ro.unibuc.prodeng.service.MetricsService;
+import io.micrometer.core.instrument.Timer;
+import java.util.function.Supplier;
 
 @ExtendWith(MockitoExtension.class)
 class ClientControllerTest {
 
     @Mock
     private ClientService clientService;
+
+    @Mock
+    private MetricsService metricsService;
+    
+    @Mock
+    private Timer lookupTimer;
 
     @InjectMocks
     private ClientController clientController;
@@ -45,7 +54,15 @@ class ClientControllerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        org.mockito.Mockito.lenient().when(metricsService.getClientLookupTimer()).thenReturn(lookupTimer);
+        org.mockito.Mockito.lenient().when(lookupTimer.record(any(Supplier.class))).thenAnswer(invocation -> {
+            Supplier<?> supplier = invocation.getArgument(0);
+            return supplier.get();
+        });
+        org.mockito.Mockito.lenient().doNothing().when(metricsService).recordClientCreated();
+        org.mockito.Mockito.lenient().doNothing().when(metricsService).recordClientCreationFailed();
+
         mockMvc = MockMvcBuilders.standaloneSetup(clientController).build();
     }
 

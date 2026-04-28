@@ -12,6 +12,7 @@ import ro.unibuc.prodeng.request.CreateClientRequest;
 import ro.unibuc.prodeng.request.UpdateClientRequest;
 import ro.unibuc.prodeng.response.ClientResponse;
 import ro.unibuc.prodeng.service.ClientService;
+import ro.unibuc.prodeng.service.MetricsService;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -20,6 +21,9 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private MetricsService metricsService;
+
     @GetMapping
     public ResponseEntity<List<ClientResponse>> getAllClients() {
         return ResponseEntity.ok(clientService.getAllClients());
@@ -27,12 +31,21 @@ public class ClientController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getClientById(@PathVariable String id) {
-        return ResponseEntity.ok(clientService.getClientById(id));
+        return metricsService.getClientLookupTimer().record(() -> 
+            ResponseEntity.ok(clientService.getClientById(id))
+        );
     }
 
     @PostMapping
     public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody CreateClientRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(request));
+        try {
+            ClientResponse response = clientService.createClient(request);
+            metricsService.recordClientCreated();
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            metricsService.recordClientCreationFailed();
+            throw e;
+        }
     }
 
     @PutMapping("/{id}")

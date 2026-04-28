@@ -32,12 +32,21 @@ import ro.unibuc.prodeng.request.RateFreelancerRequest;
 import ro.unibuc.prodeng.request.UpdateFreelancerRequest;
 import ro.unibuc.prodeng.response.FreelancerResponse;
 import ro.unibuc.prodeng.service.FreelancerService;
+import ro.unibuc.prodeng.service.MetricsService;
+import io.micrometer.core.instrument.Timer;
+import java.util.function.Supplier;
 
 @ExtendWith(MockitoExtension.class)
 class FreelancerControllerTest {
 
     @Mock
     private FreelancerService freelancerService;
+
+    @Mock
+    private MetricsService metricsService;
+    
+    @Mock
+    private Timer lookupTimer;
 
     @InjectMocks
     private FreelancerController freelancerController;
@@ -46,7 +55,16 @@ class FreelancerControllerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        org.mockito.Mockito.lenient().when(metricsService.getFreelancerLookupTimer()).thenReturn(lookupTimer);
+        org.mockito.Mockito.lenient().when(lookupTimer.record(any(Supplier.class))).thenAnswer(invocation -> {
+            Supplier<?> supplier = invocation.getArgument(0);
+            return supplier.get();
+        });
+        org.mockito.Mockito.lenient().doNothing().when(metricsService).recordFreelancerCreated();
+        org.mockito.Mockito.lenient().doNothing().when(metricsService).recordFreelancerCreationFailed();
+        org.mockito.Mockito.lenient().doNothing().when(metricsService).recordFreelancerRating(org.mockito.ArgumentMatchers.anyInt());
+
         mockMvc = MockMvcBuilders.standaloneSetup(freelancerController).build();
     }
 
