@@ -1,0 +1,19 @@
+groups:
+  - name: mongodb-compat
+    rules:
+      - record: mongodb_op_counters_total
+        expr: sum(mongodb_top_queries_count)
+        labels:
+          type: query
+      - record: mongodb_op_counters_total
+        expr: sum(mongodb_top_insert_count)
+        labels:
+          type: insert
+      - record: mongodb_op_counters_total
+        expr: sum(mongodb_top_update_count)
+        labels:
+          type: update
+      - record: mongodb_op_counters_total
+        expr: sum(mongodb_top_remove_count)
+        labels:
+          type: delete
