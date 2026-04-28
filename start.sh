@@ -3,6 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REQUESTED_JENKINS_CONFIG_ROOT="${JENKINS_CONFIG_ROOT:-./jenkins_config}"
+DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME:-masacru}"
+IMAGE_TAG="${IMAGE_TAG:-latest}"
 
 case "$REQUESTED_JENKINS_CONFIG_ROOT" in
 	"$SCRIPT_DIR/jenkins_config"|"$SCRIPT_DIR/jenkins_config/")
@@ -23,9 +25,13 @@ case "$REQUESTED_JENKINS_CONFIG_ROOT" in
 esac
 
 echo "[start] Using JENKINS_CONFIG_ROOT=$JENKINS_CONFIG_ROOT"
+echo "[start] Using image ${DOCKER_HUB_USERNAME}/prod-eng-img:${IMAGE_TAG}"
 mkdir -p "${SCRIPT_DIR}/jenkins_config"
 
 ENV_FILE=".env"
-printf 'JENKINS_CONFIG_ROOT=%s\n' "$JENKINS_CONFIG_ROOT" > "$ENV_FILE"
+printf 'JENKINS_CONFIG_ROOT=%s\nDOCKER_HUB_USERNAME=%s\nIMAGE_TAG=%s\n' \
+	"$JENKINS_CONFIG_ROOT" \
+	"$DOCKER_HUB_USERNAME" \
+	"$IMAGE_TAG" > "$ENV_FILE"
 
 docker compose --profile mongo --profile prod-eng-service up -d

@@ -71,7 +71,7 @@ pipeline {
                         docker ps -q --filter "name=mongo" | xargs -r docker stop
                     '''
                     sh """
-                        PROD_ENG_IMAGE=${DOCKER_HUB_USERNAME}/prod-eng-img:${env.IMAGE_TAG} docker compose up -d prod-eng mongo
+                        IMAGE_TAG=${env.IMAGE_TAG} docker compose up -d prod-eng mongo
                     """
                     sleep 30
                 }

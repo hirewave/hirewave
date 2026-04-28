@@ -1,6 +1,6 @@
 services:
   prod-eng:
-    image: ${PROD_ENG_IMAGE:-prod-eng-img}
+    image: ${DOCKER_HUB_USERNAME:-masacru}/prod-eng-img:${IMAGE_TAG:-latest}
     ports:
       - 8080:8080
       # Port for debug
