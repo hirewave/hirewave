@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REQUESTED_JENKINS_CONFIG_ROOT="${JENKINS_CONFIG_ROOT:-./jenkins_config}"
 DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME:-masacru}"
+IMAGE_TAG="${IMAGE_TAG:-$(git -C "$SCRIPT_DIR" tag | sort -V | tail -1)}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 
 case "$REQUESTED_JENKINS_CONFIG_ROOT" in
