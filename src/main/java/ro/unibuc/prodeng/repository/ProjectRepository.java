@@ -6,5 +6,6 @@ import ro.unibuc.prodeng.model.ProjectStatus;
 import java.util.List;
 public interface ProjectRepository extends MongoRepository<Project, String> {
         long countByAwardedFreelancerIdAndStatus(String freelancerId, ProjectStatus status);
+        long countByStatus(ProjectStatus status);
         List<Project> findByClientId(String clientId);
 }
