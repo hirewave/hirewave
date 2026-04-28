@@ -59,11 +59,11 @@ public class MetricsService {
                 
         Gauge.builder("app_active_freelancers_total", freelancerRepository, repo -> repo.count())
                 .description("Current number of active freelancers in the database")
-                .tag("type", "domain-specific")clientCreatedCounter
+                .tag("type", "domain-specific")
                 .register(registry);
     }
 
-    public void recordClientCreated() { .increment(); }
+    public void recordClientCreated() { clientCreatedCounter.increment(); }
     public void recordFreelancerCreated() { freelancerCreatedCounter.increment(); }
     
     public void recordClientCreationFailed() { clientCreationFailedCounter.increment(); }
