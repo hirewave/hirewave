@@ -29,6 +29,7 @@ rule_files:
   - canary-alerts.yml
   - container-alerts.yml
   - mongodb-compat.yml
+  - custom-alerts.yml
 
 alerting:
   alertmanagers:

@@ -1,0 +1,80 @@
+groups:
+  - name: CustomAlerts
+    rules:
+
+      # --- Availability ---
+      - alert: WARNING-ServiceHealthCheckFailing
+        expr: up{job="spring-prod-eng-app"} == 0
+        for: 30s
+        labels:
+          severity: warning
+          category: availability
+          alert_group: service-health
+        annotations:
+          summary: "Service health check failing (instance {{ $labels.instance }})"
+          description: "The spring-prod-eng-app target has been unreachable for more than 30 seconds.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: CRITICAL-ServiceHealthCheckFailing
+        expr: up{job="spring-prod-eng-app"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: availability
+          alert_group: service-health
+        annotations:
+          summary: "Service health check critically failing (instance {{ $labels.instance }})"
+          description: "The spring-prod-eng-app target has been unreachable for more than 2 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      # --- Performance ---
+      - alert: WARNING-HighRequestLatency
+        expr: >
+          sum(rate(http_server_requests_seconds_sum{uri!~"/actuator.*"}[5m])) /
+          sum(rate(http_server_requests_seconds_count{uri!~"/actuator.*"}[5m])) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          category: performance
+          alert_group: request-latency
+        annotations:
+          summary: "High average request latency ({{ $value }}s)"
+          description: "Average request latency exceeds 500ms over the last 5 minutes.\n  VALUE = {{ $value }}s\n  LABELS = {{ $labels }}"
+
+      - alert: CRITICAL-HighRequestLatency
+        expr: >
+          sum(rate(http_server_requests_seconds_sum{uri!~"/actuator.*"}[5m])) /
+          sum(rate(http_server_requests_seconds_count{uri!~"/actuator.*"}[5m])) > 2.0
+        for: 2m
+        labels:
+          severity: critical
+          category: performance
+          alert_group: request-latency
+        annotations:
+          summary: "Critical request latency ({{ $value }}s)"
+          description: "Average request latency exceeds 2s over the last 5 minutes.\n  VALUE = {{ $value }}s\n  LABELS = {{ $labels }}"
+
+      # --- Quality ---
+      - alert: WARNING-HighErrorRate
+        expr: >
+          sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) /
+          sum(rate(http_server_requests_seconds_count[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          category: quality
+          alert_group: error-rate
+        annotations:
+          summary: "High error rate detected ({{ $value | humanizePercentage }})"
+          description: "More than 5% of requests are returning 5xx errors over the last 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: CRITICAL-HighErrorRate
+        expr: >
+          sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) /
+          sum(rate(http_server_requests_seconds_count[5m])) > 0.20
+        for: 2m
+        labels:
+          severity: critical
+          category: quality
+          alert_group: error-rate
+        annotations:
+          summary: "Critical error rate detected ({{ $value | humanizePercentage }})"
+          description: "More than 20% of requests are returning 5xx errors over the last 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

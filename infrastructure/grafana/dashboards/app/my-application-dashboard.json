@@ -12,6 +12,19 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "enable": true,
+        "expr": "ALERTS{alertstate=\"firing\"}",
+        "hide": false,
+        "iconColor": "red",
+        "name": "Alert Events",
+        "step": "60s",
+        "titleFormat": "{{alertname}}"
       }
     ]
   },
@@ -54,7 +67,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "line"
             }
           },
           "mappings": [],
@@ -64,6 +77,14 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 50
               }
             ]
           },
@@ -137,7 +158,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "line"
             }
           },
           "mappings": [],
@@ -147,6 +168,14 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 2
               }
             ]
           },
@@ -273,11 +302,11 @@
               },
               {
                 "color": "yellow",
-                "value": 1
+                "value": 5
               },
               {
                 "color": "red",
-                "value": 5
+                "value": 20
               }
             ]
           },

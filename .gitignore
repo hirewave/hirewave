@@ -39,6 +39,9 @@ out/
 !.vscode/launch.json
 !.vscode/settings.json
 
+### AlertManager (contains SMTP credentials)
+infrastructure/alertmanager/alertmanager.yml
+
 ### Durable Prom store
 infrastructure/prometheus/durable
 

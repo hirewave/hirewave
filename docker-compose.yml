@@ -8,6 +8,8 @@ services:
     environment:
       ENVIRONMENT_NAME: local
       MONGODB_CONECTION_URL: mongodb://root:example@mongo:27017/
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "info,health,prometheus"
+      MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: "true"
     restart: always
     profiles:
       - "prod-eng-service"
@@ -95,6 +97,9 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/etc/prometheus/durable"
+      - "--web.enable-lifecycle"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - 9090:9090
     logging:
