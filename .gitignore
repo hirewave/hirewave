@@ -47,6 +47,7 @@ infrastructure/loki/durable/
 
 ### Claude Code ###
 .claude/
+CLAUDE.md
 
 ### Jenkins persistent local state ###
 /jenkins_config/
