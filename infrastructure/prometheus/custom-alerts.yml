@@ -1,0 +1,35 @@
+groups:
+  - name: CustomAlerts
+    rules:
+      # --- Availability ---
+      - alert: WARNING-ServiceHealthCheckFailing
+        expr: up{job="spring-prod-eng-app"} == 0
+        for: 30s
+        labels:
+          severity: warning
+          category: availability
+        annotations:
+          summary: "Service health check failing (instance {{ $labels.instance }})"
+          description: "The spring-prod-eng-app target has been unreachable for more than 30 seconds.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      # --- Performance ---
+      - alert: WARNING-HighRequestLatency
+        expr: rate(http_server_requests_seconds_sum{uri!~"/actuator.*"}[5m]) / rate(http_server_requests_seconds_count{uri!~"/actuator.*"}[5m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High average request latency on {{ $labels.uri }}"
+          description: "Average request latency exceeds 500ms over the last 5 minutes.\n  VALUE = {{ $value }}s\n  LABELS = {{ $labels }}"
+
+      # --- Quality ---
+      - alert: WARNING-HighErrorRate
+        expr: rate(http_server_requests_seconds_count{status=~"5.."}[5m]) / rate(http_server_requests_seconds_count[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          category: quality
+        annotations:
+          summary: "High error rate detected ({{ $value | humanizePercentage }})"
+          description: "More than 5% of requests are returning 5xx errors over the last 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

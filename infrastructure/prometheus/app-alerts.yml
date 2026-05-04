@@ -2,8 +2,8 @@ groups:
   - name: AppAlerts
     rules:
       - alert: WARNING-HighThroughput
-        expr: rate(prod_eng_info_count_total[1m]) > 10
-        for: 10s
+        expr: rate(prod_eng_info_count_total[1m]) > 2
+        for: 30s
         labels:
           severity: warning
         annotations:
