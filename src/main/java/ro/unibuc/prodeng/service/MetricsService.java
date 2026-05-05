@@ -19,7 +19,7 @@ public class MetricsService {
 
     public MetricsService(MeterRegistry registry, ClientRepository clientRepository, FreelancerRepository freelancerRepository) {
         this.registry = registry;
-        this.clientCreatedCounter = Counter.builder("app_clients_created_total")
+        this.clientCreatedCounter = Counter.builder("app.clients.created")
                 .description("Total number of clients created")
                 .tag("type", "business").register(registry);
                 
@@ -35,7 +35,7 @@ public class MetricsService {
                 .description("Total number of failed freelancer creation attempts")
                 .tag("type", "error").register(registry);
 
-        this.clientLookupTimer = Timer.builder("app_client_lookup_duration_seconds")
+        this.clientLookupTimer = Timer.builder("app.client.lookup.duration")
                 .description("Time taken to look up a client")
                 .tag("type", "performance")
                 .register(registry);
