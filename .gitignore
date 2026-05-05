@@ -66,8 +66,14 @@ CLAUDE.md
 .codex/
 .codex
 
+### Presentation
+/presentation/
+
 ### Agents
 .agents/
 
 ### Github Copilot
 .github/
+
+### Labs
+/labs/
