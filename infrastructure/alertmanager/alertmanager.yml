@@ -2,7 +2,7 @@ global:
   resolve_timeout: 1m
 
 route:
-  group_by: ['alertname']
+  group_by: ['alertname', 'severity']
   group_wait: 10s
   group_interval: 10s
   repeat_interval: 1m
@@ -11,9 +11,16 @@ route:
 receivers:
 - name: 'email'
   email_configs:
-  - to: 'EMAIL@gmail.com'
-    from: 'EMAIL@gmail.com'
+  - to: 'placeholder@icloud.com'
+    from: 'placeholder@gmail.com'
     smarthost: smtp.gmail.com:587
-    auth_username: 'EMAIL@gmail.com'
-    auth_identity: 'EMAIL@gmail.com'
-    auth_password: 'GENERATE ONE FROM https://security.google.com/settings/security/apppasswords'
+    auth_username: 'placeholder@gmail.com'
+    auth_identity: 'placeholder@gmail.com'
+    auth_password: 'placeholder'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alert_group']

@@ -2,7 +2,7 @@ groups:
   - name: AppAlerts
     rules:
       - alert: WARNING-HighThroughput
-        expr: rate(prod_eng_info_count_total[1m]) > 10
+        expr: rate(http_server_requests_seconds_count[1m]) > 10
         for: 10s
         labels:
           severity: warning
@@ -11,7 +11,7 @@ groups:
           description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: CRITICAL-HighThroughput
-        expr: rate(prod_eng_info_count_total[1m]) > 50
+        expr: rate(http_server_requests_seconds_count[1m]) > 50
         for: 10s
         labels:
           severity: critical
