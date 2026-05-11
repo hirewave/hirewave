@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 4 of 16</title>
+<title>HireWave - Final Presentation - Slide 4 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -206,10 +209,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -245,7 +250,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
           <li>totalRatings, ratingSum</li>
           <li>rolling average computed on demand</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-blue">Java record</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Andrei</span></div>
       </div>
       <div class="box">
         <h3>Client</h3>
@@ -254,7 +258,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
           <li>cancelledProjects</li>
           <li>reputation derived from these counters</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-blue">Java record</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Andrei</span></div>
       </div>
       <div class="box">
         <h3>Project</h3>
@@ -263,20 +266,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
           <li>awardedFreelancerId</li>
           <li>OPEN→IN_PROGRESS→COMPLETED</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-purple">mutable class</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Iustin</span></div>
       </div>
       <div class="box box-blue">
         <h3>Bid</h3>
         <ul class="bul" style="margin-top:6px">
           <li>links Project + Freelancer</li>
           <li>BidStatus: PENDING→ACCEPTED/REJECTED</li>
-          <li>immutable after creation</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-green">immutable record</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Traian</span></div>
       </div>
     </div>
     <div class="box box-navy" style="margin-top:12px;padding:10px 16px">
-      <b style="font-size:.85rem">BidService</b> is the central hub — it calls into ProjectService and FreelancerService for bid submit, accept, and rating.
+      <b style="font-size:.85rem">BidService</b> is the central hub - it calls into ProjectService and FreelancerService for bid submit, accept, and rating.
     </div>
   </div>
   <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">4</span></div>

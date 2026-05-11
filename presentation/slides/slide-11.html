@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 11 of 16</title>
+<title>HireWave - Final Presentation - Slide 11 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -206,10 +209,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -234,34 +239,38 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">Grafana Dashboards + Loki Logging</div><div class="sh-lab">Lab 8 · Observability</div></div>
+  <div class="sh"><div class="sh-title">Docker &amp; Semantic Versioning</div><div class="sh-lab">Lab 6 · Deployment</div></div>
   <div class="sb">
     <div class="cols c2" style="flex:1;align-items:start">
       <div>
-        <h2>Grafana Dashboards</h2>
+        <h2>Docker Strategy</h2>
         <div class="acl"></div>
-        <table>
-          <thead><tr><th>Dashboard</th><th>Contents</th></tr></thead>
-          <tbody>
-            <tr><td><b>My Application</b></td><td>Request rate, P95 latency, error rate, threshold lines</td></tr>
-            <tr><td><b>Spring Boot</b></td><td>JVM heap, GC pause, threads, CPU — auto-imported</td></tr>
-            <tr><td><b>Alerts Dashboard</b></td><td>Service UP/DOWN, latency, error rate — with threshold lines</td></tr>
-          </tbody>
-        </table>
-        <div class="box box-blue" style="margin-top:12px">
-          <h3>Loki — Log Aggregation</h3>
-          <ul class="bul" style="margin-top:6px">
-            <li>Compose logging driver sends selected service logs to Loki</li>
-            <li>Prometheus, AlertManager and load injectors use loki-url logging</li>
-            <li>Queryable with LogQL directly from Grafana</li>
-          </ul>
+        <ul class="bul">
+          <li>Multi-stage Dockerfile (builder + runtime)</li>
+          <li>Image tagged with semver</li>
+          <li>Auto push to Docker Hub: <code style="font-size:.78rem">${DOCKER_HUB_USERNAME}/prod-eng-img:x.y.z</code></li>
+          <li>Deploy via Docker Compose profiles</li>
+          <li>Jenkins has Docker socket access (/var/run/docker.sock)</li>
+        </ul>
+        <div class="box box-blue" style="margin-top:14px">
+          <h3>Docker Compose Profiles</h3>
+          <p><code style="font-size:.8rem">prod-eng-service</code> · <code style="font-size:.8rem">monitoring</code> · <code style="font-size:.8rem">mongo</code> · <code style="font-size:.8rem">perf</code></p>
+          <p style="margin-top:4px;font-size:.8rem">Each profile starts an independent subset of services.</p>
         </div>
       </div>
-      <div class="ss" style="height:100%">
-        <div class="ss-inner">
-          <svg class="ss-icon" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>
-          <span class="ss-lbl">Screenshot — Grafana Dashboard</span>
-          <span class="ss-url">localhost:3000</span>
+      <div>
+        <h2>Semantic Versioning</h2>
+        <div class="acl"></div>
+        <table>
+          <thead><tr><th>Component</th><th>How it's derived</th></tr></thead>
+          <tbody>
+            <tr><td>MAJOR</td><td>from last git tag (e.g. <b>1</b>.23.0)</td></tr>
+            <tr><td>MINOR</td><td>auto-incremented on every build</td></tr>
+            <tr><td>PATCH</td><td>from last git tag</td></tr>
+          </tbody>
+        </table>
+        <div class="box box-green" style="margin-top:14px">
+          <p style="font-size:.85rem">Example: after a merge, if last version was <b>1.22.0</b>, the new build produces tag <b>1.23.0</b> and image <code style="font-size:.82rem">prod-eng-img:1.23.0</code></p>
         </div>
       </div>
     </div>

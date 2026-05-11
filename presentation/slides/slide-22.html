@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave - Final Presentation - Slide 3 of 22</title>
+<title>HireWave - Final Presentation - Slide 22 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -239,49 +239,42 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">What is HireWave?</div><div class="sh-lab">Lab 1-2 · Project</div></div>
+  <div class="sh"><div class="sh-title">Summary</div><div class="sh-lab">Conclusion</div></div>
   <div class="sb">
-    <div class="cols c-2-3" style="flex:1;align-items:start">
-      <div>
-        <h2>Description</h2>
-        <div class="acl"></div>
-        <p style="font-size:.92rem;color:var(--ink2);line-height:1.65">
-          A REST API platform for the freelance market. Clients post projects, freelancers place bids, the client picks the winner.
-        </p>
-        <div style="margin-top:14px">
-          <h3>Tech Stack</h3>
-          <ul class="bul" style="margin-top:6px">
-            <li>Java 21 + Spring Boot 3.4</li>
-            <li>MongoDB 6.0 (Spring Data)</li>
-            <li>Jakarta Bean Validation</li>
-            <li>Docker + Docker Compose</li>
-          </ul>
-        </div>
+    <div class="cols c4" style="margin-bottom:16px">
+      <div class="stat-lg"><div class="stat-v">9</div><div class="stat-l">Labs completed</div></div>
+      <div class="stat-lg"><div class="stat-v">6</div><div class="stat-l">Custom alerts</div></div>
+      <div class="stat-lg"><div class="stat-v">5</div><div class="stat-l">Prometheus targets</div></div>
+      <div class="stat-lg"><div class="stat-v">3</div><div class="stat-l">Grafana dashboards</div></div>
+    </div>
+    <div class="cols c3" style="flex:1;align-items:start">
+      <div class="box">
+        <h3>Application (Labs 1-5)</h3>
+        <ul class="bul" style="margin-top:8px">
+          <li>Full REST API with business rules</li>
+          <li>3 testing layers: unit, integration, E2E</li>
+          <li>GlobalExceptionHandler + Micrometer metrics</li>
+        </ul>
       </div>
-      <div>
-        <h2>Main Flow</h2>
-        <div class="acl"></div>
-        <div class="flow" style="margin-bottom:12px">
-          <div class="fb"><span class="fv" style="color:var(--green)">OPEN</span><span class="fl">project created</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--amber)">IN_PROGRESS</span><span class="fl">bid accepted</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--blue)">COMPLETED</span><span class="fl">done + rating</span></div>
-        </div>
-        <div class="flow">
-          <div class="fb"><span class="fv" style="color:var(--green)">OPEN</span><span class="fl">project created</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--red)">CANCELLED</span><span class="fl">cancelled by client</span></div>
-          <div class="fb" style="flex:2;background:#fafafa"><span class="fl" style="font-size:.72rem;padding:0 8px;color:#94a3b8">or directly from OPEN</span></div>
-        </div>
-        <div class="box box-blue" style="margin-top:12px">
-          <b style="font-size:.85rem">Bid status:</b> <span class="b b-gray">PENDING</span> → <span class="b b-green">ACCEPTED</span> or <span class="b b-red">REJECTED</span>
-          <p style="margin-top:4px;font-size:.8rem">Accepting a bid automatically bulk-rejects all other PENDING bids on the same project.</p>
-        </div>
+      <div class="box box-amber">
+        <h3>CI/CD (Lab 6)</h3>
+        <ul class="bul" style="margin-top:8px">
+          <li>Jenkins: build → test → version → deploy</li>
+          <li>Automatic semantic versioning from git tags</li>
+          <li>Docker Hub registry + compose profiles</li>
+        </ul>
+      </div>
+      <div class="box box-navy">
+        <h3>Observability (Labs 7-9)</h3>
+        <ul class="bul" style="margin-top:8px">
+          <li>Prometheus + Grafana + Loki</li>
+          <li>6 custom alerts, 3 categories</li>
+          <li>Email verified, full lifecycle tested</li>
+        </ul>
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">3</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">22</span></div>
 </div>
 </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation</title>
+<title>HireWave - Final Presentation</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -151,6 +151,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -223,10 +226,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -251,13 +256,13 @@ tr:last-child td{border-bottom:none}
 <div class="deck" id="deck">
 
 <!-- ============================================================
-  Slide 01: HireWave
+  Slide 01: Hirewave
   Source: slides/slide-01.html
 ============================================================ -->
 <div class="slide title-slide active">
   <div class="ts-left">
-    <div class="ts-label">Production Engineering · 2025–2026</div>
-    <div class="ts-title">Hire<br>Wave</div>
+    <div class="ts-label">Production Engineering · 2025-2026</div>
+    <div class="ts-title">Hirewave</div>
     <div class="ts-sub">Freelance marketplace REST API with Jenkins CI/CD, Prometheus, Grafana and AlertManager</div>
     <div style="margin-top:20px">
       <span class="b b-white">Team: Traian, Andrei, Iustin</span>
@@ -266,11 +271,11 @@ tr:last-child td{border-bottom:none}
   <div class="ts-right">
     <h3>Lab Overview</h3>
     <table style="margin-top:6px">
-      <tbody><tr><td><span class="b b-blue">Lab 1–2</span></td><td>Setup, Domain Model, MongoDB</td></tr>
-      <tr><td><span class="b b-blue">Lab 3–4</span></td><td>REST API, Business Rules</td></tr>
+      <tbody><tr><td><span class="b b-blue">Lab 1-2</span></td><td>Setup, Domain Model, MongoDB</td></tr>
+      <tr><td><span class="b b-blue">Lab 3-4</span></td><td>REST API, Business Rules</td></tr>
       <tr><td><span class="b b-blue">Lab 5</span></td><td>Testing: Unit, Integration, E2E</td></tr>
       <tr><td><span class="b b-amber">Lab 6</span></td><td>CI/CD Jenkins + Docker Hub</td></tr>
-      <tr><td><span class="b b-green">Lab 7–8</span></td><td>Prometheus, Grafana, Loki</td></tr>
+      <tr><td><span class="b b-green">Lab 7-8</span></td><td>Prometheus, Grafana, Loki</td></tr>
       <tr><td><span class="b b-red">Lab 9</span></td><td>Alerting with AlertManager</td></tr>
     </tbody></table>
   </div>
@@ -289,9 +294,7 @@ tr:last-child td{border-bottom:none}
         <ul class="bul">
           <li>Freelancer CRUD, skills and hourly-rate validation</li>
           <li>Client CRUD and reputation score model</li>
-          <li>Freelancer availability limit for active projects</li>
-          <li>Rating average recalculation after completion</li>
-          <li>Skill-based bid eligibility rules</li>
+          <li>Rating average recalculation after rating receival</li>
         </ul>
         <div class="tag-row"><span class="b b-blue">Freelancer</span><span class="b b-green">Client</span><span class="b b-purple">Validation</span></div>
       </div>
@@ -326,7 +329,7 @@ tr:last-child td{border-bottom:none}
   Source: slides/slide-03.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">What is HireWave?</div><div class="sh-lab">Lab 1–2 · Project</div></div>
+  <div class="sh"><div class="sh-title">What is HireWave?</div><div class="sh-lab">Lab 1-2 · Project</div></div>
   <div class="sb">
     <div class="cols c-2-3" style="flex:1;align-items:start">
       <div>
@@ -386,7 +389,6 @@ tr:last-child td{border-bottom:none}
           <li>totalRatings, ratingSum</li>
           <li>rolling average computed on demand</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-blue">Java record</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Andrei</span></div>
       </div>
       <div class="box">
         <h3>Client</h3>
@@ -395,7 +397,6 @@ tr:last-child td{border-bottom:none}
           <li>cancelledProjects</li>
           <li>reputation derived from these counters</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-blue">Java record</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Andrei</span></div>
       </div>
       <div class="box">
         <h3>Project</h3>
@@ -404,30 +405,40 @@ tr:last-child td{border-bottom:none}
           <li>awardedFreelancerId</li>
           <li>OPEN→IN_PROGRESS→COMPLETED</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-purple">mutable class</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Iustin</span></div>
       </div>
       <div class="box box-blue">
         <h3>Bid</h3>
         <ul class="bul" style="margin-top:6px">
           <li>links Project + Freelancer</li>
           <li>BidStatus: PENDING→ACCEPTED/REJECTED</li>
-          <li>immutable after creation</li>
         </ul>
-        <div style="margin-top:10px"><span class="b b-green">immutable record</span><br><span style="font-size:.72rem;color:var(--muted)">owned by Traian</span></div>
       </div>
     </div>
     <div class="box box-navy" style="margin-top:12px;padding:10px 16px">
-      <b style="font-size:.85rem">BidService</b> is the central hub — it calls into ProjectService and FreelancerService for bid submit, accept, and rating.
+      <b style="font-size:.85rem">BidService</b> is the central hub - it calls into ProjectService and FreelancerService for bid submit, accept, and rating.
     </div>
   </div>
   <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">4</span></div>
 </div>
 <!-- ============================================================
-  Slide 05: REST API — Endpoints
+  Slide 05: Architecture Controller Service Graph
   Source: slides/slide-05.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">REST API — Endpoints</div><div class="sh-lab">Lab 3 · API Design</div></div>
+  <div class="sh"><div class="sh-title">Architecture Controller Service Graph</div><div class="sh-lab">Architecture Diagram</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="images/graph_architechture_controller_service.png" alt="Architecture Controller Service Graph" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
+    </div>
+  </div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">5</span></div>
+</div>
+<!-- ============================================================
+  Slide 06: REST API - Endpoints
+  Source: slides/slide-06.html
+============================================================ -->
+<div class="slide">
+  <div class="sh"><div class="sh-title">REST API - Endpoints</div><div class="sh-lab">Lab 3 · API Design</div></div>
   <div class="sb">
     <div class="cols c2" style="flex:1;align-items:start">
       <div>
@@ -465,14 +476,14 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">5</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">6</span></div>
 </div>
 <!-- ============================================================
-  Slide 06: Business Rules — BidService
-  Source: slides/slide-06.html
+  Slide 07: Business Rules - BidService
+  Source: slides/slide-07.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">Business Rules — BidService</div><div class="sh-lab">Lab 4 · Service Layer</div></div>
+  <div class="sh"><div class="sh-title">Business Rules - BidService</div><div class="sh-lab">Lab 4 · Service Layer</div></div>
   <div class="sb">
     <div class="cols c3" style="flex:1;align-items:start">
       <div>
@@ -516,11 +527,11 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">6</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">7</span></div>
 </div>
 <!-- ============================================================
-  Slide 07: Testing Strategy
-  Source: slides/slide-07.html
+  Slide 08: Testing Strategy
+  Source: slides/slide-08.html
 ============================================================ -->
 <div class="slide">
   <div class="sh"><div class="sh-title">Testing Strategy</div><div class="sh-lab">Lab 5 · Testing</div></div>
@@ -564,14 +575,14 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
     <div class="box box-navy" style="margin-top:12px;padding:10px 16px">
-      <b style="font-size:.85rem">JaCoCo</b> — Code coverage report generated on every build. Excludes: config/, exception/, model/, repository/, request/, response/
+      <b style="font-size:.85rem">JaCoCo</b> - Code coverage report generated on every build. Excludes: config/, exception/, model/, repository/, request/, response/
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">7</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">8</span></div>
 </div>
 <!-- ============================================================
-  Slide 08: Jenkins CI/CD Pipeline
-  Source: slides/slide-08.html
+  Slide 09: Jenkins CI/CD Pipeline
+  Source: slides/slide-09.html
 ============================================================ -->
 <div class="slide">
   <div class="sh"><div class="sh-title">Jenkins CI/CD Pipeline</div><div class="sh-lab">Lab 6 · Deployment</div></div>
@@ -589,8 +600,8 @@ tr:last-child td{border-bottom:none}
       <div class="ps-arrow">›</div>
       <div class="ps"><span class="pn">06</span><span class="pt">Deploy</span><span class="pd">docker compose up</span></div>
     </div>
-    <div class="cols c-2-3" style="flex:1;align-items:start">
-      <div>
+    <div class="cols" style="grid-template-columns:minmax(250px,.8fr) minmax(0,1.6fr);gap:18px;flex:1;min-height:0;align-items:stretch">
+      <div class="box box-blue" style="height:100%;display:flex;flex-direction:column;justify-content:center;padding:14px 16px">
         <h2>Git Flow</h2>
         <div class="acl"></div>
         <ul class="bul">
@@ -600,20 +611,29 @@ tr:last-child td{border-bottom:none}
           <li>Minor version auto-incremented on every build</li>
         </ul>
       </div>
-      <div class="ss">
-        <div class="ss-inner">
-          <svg class="ss-icon" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
-          <span class="ss-lbl">Screenshot — Jenkins pipeline running</span>
-          <span class="ss-url">localhost:8082</span>
-        </div>
+      <div class="ss" style="height:100%;min-height:0;padding:12px;background:#fff;border-style:solid;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box">
+        <img src="images/jenkins_build_succeded.png" alt="Jenkins build succeeded" style="width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block">
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">8</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">9</span></div>
 </div>
 <!-- ============================================================
-  Slide 09: Docker & Semantic Versioning
-  Source: slides/slide-09.html
+  Slide 10: Jenkins CI CD Docker Hub Flow
+  Source: slides/slide-10.html
+============================================================ -->
+<div class="slide">
+  <div class="sh"><div class="sh-title">Jenkins CI CD Docker Hub Flow</div><div class="sh-lab">CI/CD Diagram</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="images/graph_chart_jenkins_CI_CD_auto_dockerhub.png" alt="Jenkins CI CD Docker Hub Flow" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
+    </div>
+  </div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">10</span></div>
+</div>
+<!-- ============================================================
+  Slide 11: Docker & Semantic Versioning
+  Source: slides/slide-11.html
 ============================================================ -->
 <div class="slide">
   <div class="sh"><div class="sh-title">Docker &amp; Semantic Versioning</div><div class="sh-lab">Lab 6 · Deployment</div></div>
@@ -652,14 +672,14 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">9</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">11</span></div>
 </div>
 <!-- ============================================================
-  Slide 10: Prometheus — Metrics Collection
-  Source: slides/slide-10.html
+  Slide 12: Prometheus - Metrics Collection
+  Source: slides/slide-12.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">Prometheus — Metrics Collection</div><div class="sh-lab">Lab 7 · Monitoring</div></div>
+  <div class="sh"><div class="sh-title">Prometheus - Metrics Collection</div><div class="sh-lab">Lab 7 · Monitoring</div></div>
   <div class="sb">
     <div class="cols c-2-3" style="flex:1;align-items:start">
       <div>
@@ -681,26 +701,40 @@ tr:last-child td{border-bottom:none}
         </div>
       </div>
       <div>
-        <h2>Custom Metrics — MetricsService</h2>
+        <h2>Custom Metrics - MetricsService</h2>
         <div class="acl"></div>
-        <table>
-          <thead><tr><th>Type</th><th>Metric</th><th>Measures</th></tr></thead>
+        <table style="font-size:.68rem">
+          <thead><tr><th>Domain</th><th>Metric</th><th>Measures</th></tr></thead>
           <tbody>
-            <tr><td><span class="b b-blue">Counter</span></td><td>app_users_created</td><td>Users created</td></tr>
-            <tr><td><span class="b b-blue">Counter</span></td><td>app_errors</td><td>Errors by exception type</td></tr>
-            <tr><td><span class="b b-purple">Timer</span></td><td>app_user_lookup_duration_seconds</td><td>User lookup latency</td></tr>
-            <tr><td><span class="b b-green">Gauge</span></td><td>app_db_connections_active</td><td>Active DB operations</td></tr>
-            <tr><td><span class="b b-green">Gauge</span></td><td>app_open_projects</td><td>Open projects count</td></tr>
+            <tr><td><span class="b b-green">Client</span></td><td><code>app_clients_created_total</code><br><code>app_client_creation_failed_total</code></td><td>client create success/fail</td></tr>
+            <tr><td><span class="b b-green">Client</span></td><td><code>app_active_clients_total</code><br><code>app_client_lookup_duration_seconds</code></td><td>active clients + lookup latency</td></tr>
+            <tr><td><span class="b b-blue">Freelancer</span></td><td><code>app_freelancers_created_total</code><br><code>app_freelancer_creation_failed_total</code></td><td>freelancer create success/fail</td></tr>
+            <tr><td><span class="b b-blue">Freelancer</span></td><td><code>app_active_freelancers_total</code><br><code>app_freelancer_lookup_duration_seconds</code></td><td>active freelancers + lookup latency</td></tr>
+            <tr><td><span class="b b-purple">Rating</span></td><td><code>app_freelancer_rating_value_distribution</code><br><code>app_freelancer_rating_submitted_total</code></td><td>rating percentiles + score counts</td></tr>
+            <tr><td><span class="b b-amber">Bid</span></td><td><code>app_bids_submitted_total</code><br><code>app_bids_accepted_total</code><br><code>app_bids_rejected_total</code></td><td>bid workflow volume</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">10</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">12</span></div>
 </div>
 <!-- ============================================================
-  Slide 11: Grafana Dashboards + Loki Logging
-  Source: slides/slide-11.html
+  Slide 13: Prometheus Target Health
+  Source: slides/slide-13.html
+============================================================ -->
+<div class="slide">
+  <div class="sh"><div class="sh-title">Prometheus Target Health</div><div class="sh-lab">Monitoring Screenshot</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="images/prometheus_target_health.png" alt="Prometheus Target Health" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
+    </div>
+  </div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">13</span></div>
+</div>
+<!-- ============================================================
+  Slide 14: Grafana Dashboards + Loki Logging
+  Source: slides/slide-14.html
 ============================================================ -->
 <div class="slide">
   <div class="sh"><div class="sh-title">Grafana Dashboards + Loki Logging</div><div class="sh-lab">Lab 8 · Observability</div></div>
@@ -713,43 +747,29 @@ tr:last-child td{border-bottom:none}
           <thead><tr><th>Dashboard</th><th>Contents</th></tr></thead>
           <tbody>
             <tr><td><b>My Application</b></td><td>Request rate, P95 latency, error rate, threshold lines</td></tr>
-            <tr><td><b>Spring Boot</b></td><td>JVM heap, GC pause, threads, CPU — auto-imported</td></tr>
-            <tr><td><b>Alerts Dashboard</b></td><td>Service UP/DOWN, latency, error rate — with threshold lines</td></tr>
+            <tr><td><b>Spring Boot</b></td><td>JVM heap, GC pause, threads, CPU - auto-imported</td></tr>
+            <tr><td><b>Alerts Dashboard</b></td><td>Service UP/DOWN, latency, error rate - with threshold lines</td></tr>
           </tbody>
         </table>
-        <div class="box box-blue" style="margin-top:12px">
-          <h3>Loki — Log Aggregation</h3>
-          <ul class="bul" style="margin-top:6px">
-            <li>Compose logging driver sends selected service logs to Loki</li>
-            <li>Prometheus, AlertManager and load injectors use loki-url logging</li>
-            <li>Queryable with LogQL directly from Grafana</li>
-          </ul>
         </div>
-      </div>
-      <div class="ss" style="height:100%">
-        <div class="ss-inner">
-          <svg class="ss-icon" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>
-          <span class="ss-lbl">Screenshot — Grafana Dashboard</span>
-          <span class="ss-url">localhost:3000</span>
-        </div>
-      </div>
+      <div class="ss" style="height:100%"><img src="images/grafana_custom_dashboardul.png" alt="Grafana custom dashboard" style="width:100%;height:100%;object-fit:contain;display:block"></div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">11</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">14</span></div>
 </div>
 <!-- ============================================================
-  Slide 12: Alerting — Why? How does it work?
-  Source: slides/slide-12.html
+  Slide 15: Alerting - Why? How does it work?
+  Source: slides/slide-15.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">Alerting — Why? How does it work?</div><div class="sh-lab">Lab 9 · Alerting</div></div>
+  <div class="sh"><div class="sh-title">Alerting - Why? How does it work?</div><div class="sh-lab">Lab 9 · Alerting</div></div>
   <div class="sb">
     <div class="cols c2" style="flex:1;align-items:start">
       <div>
         <h2>The Problem</h2>
         <div class="acl"></div>
         <ul class="bul">
-          <li>Dashboards show WHAT happened — not THAT something happened</li>
+          <li>Dashboards show WHAT happened - not THAT something happened</li>
           <li>Someone has to watch them around the clock</li>
           <li>3 AM incident → nobody knows</li>
         </ul>
@@ -764,54 +784,67 @@ tr:last-child td{border-bottom:none}
         <table class="lct">
           <thead><tr><th>State</th><th>What happens</th><th>for:</th></tr></thead>
           <tbody>
-            <tr class="inactive"><td>Inactive</td><td>Condition is false, everything ok</td><td>—</td></tr>
+            <tr class="inactive"><td>Inactive</td><td>Condition is false, everything ok</td><td>-</td></tr>
             <tr class="pending"><td>Pending</td><td>Condition is true, waiting for duration</td><td>running</td></tr>
             <tr class="firing"><td>Firing</td><td>AlertManager receives it, sends email</td><td>elapsed</td></tr>
-            <tr class="resolved"><td>Resolved</td><td>Condition becomes false, resolution email sent</td><td>—</td></tr>
+            <tr class="resolved"><td>Resolved</td><td>Condition becomes false, resolution email sent</td><td>-</td></tr>
           </tbody>
         </table>
         <div class="box box-amber" style="margin-top:12px">
           <b style="font-size:.85rem">The "for:" field</b>
-          <p style="margin-top:4px;font-size:.82rem">Debounce — avoids false alerts for momentary spikes. Container down → <code>for: 0m</code>. Latency → <code>for: 2m</code>.</p>
+          <p style="margin-top:4px;font-size:.82rem">Debounce - avoids false alerts for momentary spikes. Container down → <code>for: 0m</code>. Latency → <code>for: 2m</code>.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">12</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">15</span></div>
 </div>
 <!-- ============================================================
-  Slide 13: Custom Alert Rules — 3 Categories
-  Source: slides/slide-13.html
+  Slide 16: Custom Alert Rules - 3 Categories
+  Source: slides/slide-16.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">Custom Alert Rules — 3 Categories</div><div class="sh-lab">Lab 9 · custom-alerts.yml</div></div>
+  <div class="sh"><div class="sh-title">Custom Alert Rules - 3 Categories</div><div class="sh-lab">Lab 9 · custom-alerts.yml</div></div>
   <div class="sb">
     <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between">
       <div>
-        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">AVAILABILITY — is the service reachable?</div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">AVAILABILITY - is the service reachable?</div>
         <div class="ar aw"><span class="b b-amber">WARNING</span><span class="an">ServiceHealthCheckFailing</span><span class="ae">up{job="spring-prod-eng-app"} == 0</span><span class="af">for: 30s</span></div>
         <div class="ar ac"><span class="b b-red">CRITICAL</span><span class="an">ServiceHealthCheckFailing</span><span class="ae">up{job="spring-prod-eng-app"} == 0</span><span class="af">for: 2m</span></div>
       </div>
       <div style="margin-top:10px">
-        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">PERFORMANCE — is it responding fast enough?</div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">PERFORMANCE - is it responding fast enough?</div>
         <div class="ar aw"><span class="b b-amber">WARNING</span><span class="an">HighRequestLatency</span><span class="ae">avg(http_server_requests_seconds_sum/count) &gt; 0.5s</span><span class="af">for: 2m</span></div>
         <div class="ar ac"><span class="b b-red">CRITICAL</span><span class="an">HighRequestLatency</span><span class="ae">avg(http_server_requests_seconds_sum/count) &gt; 2s</span><span class="af">for: 2m</span></div>
       </div>
       <div style="margin-top:10px">
-        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">QUALITY — are responses correct?</div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">QUALITY - are responses correct?</div>
         <div class="ar aw"><span class="b b-amber">WARNING</span><span class="an">HighErrorRate</span><span class="ae">rate(5xx errors) / rate(total requests) &gt; 5%</span><span class="af">for: 2m</span></div>
         <div class="ar ac"><span class="b b-red">CRITICAL</span><span class="an">HighErrorRate</span><span class="ae">rate(5xx errors) / rate(total requests) &gt; 20%</span><span class="af">for: 2m</span></div>
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">13</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">16</span></div>
 </div>
 <!-- ============================================================
-  Slide 14: AlertManager — Configuration
-  Source: slides/slide-14.html
+  Slide 17: Prometheus Custom Alerts
+  Source: slides/slide-17.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">AlertManager — Configuration</div><div class="sh-lab">Lab 9 · AlertManager</div></div>
+  <div class="sh"><div class="sh-title">Prometheus Custom Alerts</div><div class="sh-lab">Alert Rules Screenshot</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="images/prometheus_custom_alerts.png" alt="Prometheus Custom Alerts" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
+    </div>
+  </div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">17</span></div>
+</div>
+<!-- ============================================================
+  Slide 18: AlertManager - Configuration
+  Source: slides/slide-18.html
+============================================================ -->
+<div class="slide">
+  <div class="sh"><div class="sh-title">AlertManager - Configuration</div><div class="sh-lab">Lab 9 · AlertManager</div></div>
   <div class="sb">
     <div class="cols c3" style="flex:1;align-items:start">
       <div>
@@ -826,7 +859,7 @@ tr:last-child td{border-bottom:none}
         </table>
         <div class="box box-blue" style="margin-top:12px">
           <h3>Email</h3>
-          <p><b>From:</b> ingeni***@gmail.com<br><b>To:</b> cla***@tra***.com<br><b>SMTP:</b> smtp.gmail.com:587<br><b>Auth:</b> Gmail App Password</p>
+          <p><b>SMTP:</b> smtp.gmail.com:587<br><b>Auth:</b> Gmail App Password</p>
         </div>
       </div>
       <div>
@@ -858,14 +891,14 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">14</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">18</span></div>
 </div>
 <!-- ============================================================
-  Slide 15: Alert Lifecycle Test — Proof of Work
-  Source: slides/slide-15.html
+  Slide 19: Alert Lifecycle Test - Proof of Work
+  Source: slides/slide-19.html
 ============================================================ -->
 <div class="slide">
-  <div class="sh"><div class="sh-title">Alert Lifecycle Test — Proof of Work</div><div class="sh-lab">Lab 9 · Proof of Work</div></div>
+  <div class="sh"><div class="sh-title">Alert Lifecycle Test - Proof of Work</div><div class="sh-lab">Lab 9 · Proof of Work</div></div>
   <div class="sb">
     <div class="cols c2" style="flex:1;align-items:start">
       <div>
@@ -886,45 +919,51 @@ tr:last-child td{border-bottom:none}
           <b>AlertManager log confirmed:</b>
           <p style="font-family:monospace;font-size:.78rem;margin-top:4px">msg="Notify success" receiver=warning-email attempts=1 duration=1.599s</p>
         </div>
-        <p style="font-size:.82rem;color:var(--muted);margin-top:8px">Automated test: <code style="font-size:.8rem">python3 test_alerts.py</code> — script at project root.</p>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:8px">Automated test: <code style="font-size:.8rem">python3 test_alerts.py</code> - script at project root.</p>
       </div>
       <div>
         <h2>Required Screenshots</h2>
         <div class="acl"></div>
         <div class="cols c2" style="gap:10px">
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">Prometheus — FIRING</span>
-              <span class="ss-url">:9090/alerts</span>
-            </div>
-          </div>
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">AlertManager UI</span>
-              <span class="ss-url">:9093</span>
-            </div>
-          </div>
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">Email primit</span>
-              <span class="ss-url">inbox</span>
-            </div>
-          </div>
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">Grafana thresholds</span>
-              <span class="ss-url">:3000</span>
-            </div>
-          </div>
+          <div class="ss" style="min-height:120px"><img src="images/prometheus_alerts.png" alt="Prometheus firing alerts" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+          <div class="ss" style="min-height:120px"><img src="images/alertmanager.png" alt="AlertManager UI" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+          <div class="ss" style="min-height:120px"><img src="images/received_email.png" alt="Received alert email" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+          <div class="ss" style="min-height:120px"><img src="images/grafana_custom_dashboardul.png" alt="Grafana alert thresholds" style="width:100%;height:100%;object-fit:contain;display:block"></div>
         </div>
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">15</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">19</span></div>
 </div>
 <!-- ============================================================
-  Slide 16: Summary
-  Source: slides/slide-16.html
+  Slide 20: Prometheus Alerts
+  Source: slides/slide-20.html
+============================================================ -->
+<div class="slide">
+  <div class="sh"><div class="sh-title">Prometheus Alerts</div><div class="sh-lab">Alerting Screenshot</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="images/prometheus_alerts.png" alt="Prometheus Alerts" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
+    </div>
+  </div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">20</span></div>
+</div>
+<!-- ============================================================
+  Slide 21: Received Email Alert
+  Source: slides/slide-21.html
+============================================================ -->
+<div class="slide">
+  <div class="sh"><div class="sh-title">Received Email Alert</div><div class="sh-lab">AlertManager Evidence</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="images/received_email.png" alt="Received Email Alert" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
+    </div>
+  </div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">21</span></div>
+</div>
+<!-- ============================================================
+  Slide 22: Summary
+  Source: slides/slide-22.html
 ============================================================ -->
 <div class="slide">
   <div class="sh"><div class="sh-title">Summary</div><div class="sh-lab">Conclusion</div></div>
@@ -937,7 +976,7 @@ tr:last-child td{border-bottom:none}
     </div>
     <div class="cols c3" style="flex:1;align-items:start">
       <div class="box">
-        <h3>Application (Labs 1–5)</h3>
+        <h3>Application (Labs 1-5)</h3>
         <ul class="bul" style="margin-top:8px">
           <li>Full REST API with business rules</li>
           <li>3 testing layers: unit, integration, E2E</li>
@@ -953,7 +992,7 @@ tr:last-child td{border-bottom:none}
         </ul>
       </div>
       <div class="box box-navy">
-        <h3>Observability (Labs 7–9)</h3>
+        <h3>Observability (Labs 7-9)</h3>
         <ul class="bul" style="margin-top:8px">
           <li>Prometheus + Grafana + Loki</li>
           <li>6 custom alerts, 3 categories</li>
@@ -962,7 +1001,7 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">16</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">22</span></div>
 </div>
 
 </div><!-- /deck -->
@@ -971,7 +1010,7 @@ tr:last-child td{border-bottom:none}
 <nav class="nav">
   <button class="nb" id="bp" onclick="go(-1)">‹</button>
   <div class="dots" id="dots"></div>
-  <span class="nc" id="nc">1 / 16</span>
+  <span class="nc" id="nc">1 / 22</span>
   <button class="nb" id="bn" onclick="go(1)">›</button>
 </nav>
 

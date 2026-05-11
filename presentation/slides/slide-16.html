@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 16 of 16</title>
+<title>HireWave - Final Presentation - Slide 16 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -206,10 +209,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -234,38 +239,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">Summary</div><div class="sh-lab">Conclusion</div></div>
+  <div class="sh"><div class="sh-title">Custom Alert Rules - 3 Categories</div><div class="sh-lab">Lab 9 · custom-alerts.yml</div></div>
   <div class="sb">
-    <div class="cols c4" style="margin-bottom:16px">
-      <div class="stat-lg"><div class="stat-v">9</div><div class="stat-l">Labs completed</div></div>
-      <div class="stat-lg"><div class="stat-v">6</div><div class="stat-l">Custom alerts</div></div>
-      <div class="stat-lg"><div class="stat-v">5</div><div class="stat-l">Prometheus targets</div></div>
-      <div class="stat-lg"><div class="stat-v">3</div><div class="stat-l">Grafana dashboards</div></div>
-    </div>
-    <div class="cols c3" style="flex:1;align-items:start">
-      <div class="box">
-        <h3>Application (Labs 1–5)</h3>
-        <ul class="bul" style="margin-top:8px">
-          <li>Full REST API with business rules</li>
-          <li>3 testing layers: unit, integration, E2E</li>
-          <li>GlobalExceptionHandler + Micrometer metrics</li>
-        </ul>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between">
+      <div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">AVAILABILITY - is the service reachable?</div>
+        <div class="ar aw"><span class="b b-amber">WARNING</span><span class="an">ServiceHealthCheckFailing</span><span class="ae">up{job="spring-prod-eng-app"} == 0</span><span class="af">for: 30s</span></div>
+        <div class="ar ac"><span class="b b-red">CRITICAL</span><span class="an">ServiceHealthCheckFailing</span><span class="ae">up{job="spring-prod-eng-app"} == 0</span><span class="af">for: 2m</span></div>
       </div>
-      <div class="box box-amber">
-        <h3>CI/CD (Lab 6)</h3>
-        <ul class="bul" style="margin-top:8px">
-          <li>Jenkins: build → test → version → deploy</li>
-          <li>Automatic semantic versioning from git tags</li>
-          <li>Docker Hub registry + compose profiles</li>
-        </ul>
+      <div style="margin-top:10px">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">PERFORMANCE - is it responding fast enough?</div>
+        <div class="ar aw"><span class="b b-amber">WARNING</span><span class="an">HighRequestLatency</span><span class="ae">avg(http_server_requests_seconds_sum/count) &gt; 0.5s</span><span class="af">for: 2m</span></div>
+        <div class="ar ac"><span class="b b-red">CRITICAL</span><span class="an">HighRequestLatency</span><span class="ae">avg(http_server_requests_seconds_sum/count) &gt; 2s</span><span class="af">for: 2m</span></div>
       </div>
-      <div class="box box-navy">
-        <h3>Observability (Labs 7–9)</h3>
-        <ul class="bul" style="margin-top:8px">
-          <li>Prometheus + Grafana + Loki</li>
-          <li>6 custom alerts, 3 categories</li>
-          <li>Email verified, full lifecycle tested</li>
-        </ul>
+      <div style="margin-top:10px">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">QUALITY - are responses correct?</div>
+        <div class="ar aw"><span class="b b-amber">WARNING</span><span class="an">HighErrorRate</span><span class="ae">rate(5xx errors) / rate(total requests) &gt; 5%</span><span class="af">for: 2m</span></div>
+        <div class="ar ac"><span class="b b-red">CRITICAL</span><span class="an">HighErrorRate</span><span class="ae">rate(5xx errors) / rate(total requests) &gt; 20%</span><span class="af">for: 2m</span></div>
       </div>
     </div>
   </div>

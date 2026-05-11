@@ -20,7 +20,7 @@ SLIDE_W = 12192000
 SLIDE_H = 6858000
 VIEWPORT_W = 1600
 VIEWPORT_H = 900
-DEFAULT_ZOOM = 1.7
+DEFAULT_ZOOM = 1.5
 
 
 def xml_escape(value: str) -> str:

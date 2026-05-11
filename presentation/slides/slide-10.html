@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 10 of 16</title>
+<title>HireWave - Final Presentation - Slide 10 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -202,14 +205,34 @@ tr:last-child td{border-bottom:none}
 .stat-l{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:6px;font-weight:600;
   text-transform:uppercase;letter-spacing:1px}
 
+/* ── TEAM CONTRIBUTION SLIDE ── */
+.team-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;flex:1;align-items:stretch}
+.team-card{position:relative;overflow:hidden;border:1px solid #dbe3ee;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+  padding:20px 18px 16px;min-height:344px;display:flex;flex-direction:column;box-shadow:0 12px 30px rgba(15,35,64,.08)}
+.team-card::before{content:'';position:absolute;inset:0 0 auto;height:5px;background:var(--team-accent,var(--blue))}
+.team-card::after{content:attr(data-index);position:absolute;right:14px;top:12px;font-size:3.4rem;font-weight:900;
+  line-height:1;color:rgba(30,58,95,.06);letter-spacing:-3px}
+.team-card .tm{position:relative;font-size:1.08rem;font-weight:900;color:var(--navy);line-height:1.1;max-width:75%}
+.team-card .tr{position:relative;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.3px;color:var(--team-accent,var(--blue));
+  margin-top:7px;margin-bottom:16px}
+.team-card ul.bul li{font-size:.82rem;line-height:1.42;padding-top:7px;padding-bottom:7px;background:transparent}
+.team-card ul.bul li::before{background:var(--team-accent,var(--blue))}
+.team-card .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:14px;border-top:1px solid #e5edf6}
+.team-card .tag-row .b{margin:0;font-size:.66rem;padding:3px 8px}
+.team-card.blue{--team-accent:var(--blue)}
+.team-card.amber{--team-accent:var(--amber)}
+.team-card.red{--team-accent:var(--red)}
+
 /* ── ACCENT LINE ── */
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -234,41 +257,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">Prometheus — Metrics Collection</div><div class="sh-lab">Lab 7 · Monitoring</div></div>
-  <div class="sb">
-    <div class="cols c-2-3" style="flex:1;align-items:start">
-      <div>
-        <h2>5 Active Targets</h2>
-        <div class="acl"></div>
-        <table>
-          <thead><tr><th>Target</th><th>Port</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>spring-prod-eng-app</td><td>8080</td><td><span class="b b-green">UP</span></td></tr>
-            <tr><td>cadvisor</td><td>8081</td><td><span class="b b-green">UP</span></td></tr>
-            <tr><td>mongodb-exporter</td><td>9001</td><td><span class="b b-green">UP</span></td></tr>
-            <tr><td>loki</td><td>3100</td><td><span class="b b-green">UP</span></td></tr>
-            <tr><td>prometheus (self)</td><td>9090</td><td><span class="b b-green">UP</span></td></tr>
-          </tbody>
-        </table>
-        <div class="box box-blue" style="margin-top:12px">
-          <h3>Scrape Interval: 30s</h3>
-          <p>Prometheus scrapes <code style="font-size:.8rem">/actuator/prometheus</code> on the Spring app. Metrics visible immediately in Prometheus UI.</p>
-        </div>
-      </div>
-      <div>
-        <h2>Custom Metrics — MetricsService</h2>
-        <div class="acl"></div>
-        <table>
-          <thead><tr><th>Type</th><th>Metric</th><th>Measures</th></tr></thead>
-          <tbody>
-            <tr><td><span class="b b-blue">Counter</span></td><td>app_users_created</td><td>Users created</td></tr>
-            <tr><td><span class="b b-blue">Counter</span></td><td>app_errors</td><td>Errors by exception type</td></tr>
-            <tr><td><span class="b b-purple">Timer</span></td><td>app_user_lookup_duration_seconds</td><td>User lookup latency</td></tr>
-            <tr><td><span class="b b-green">Gauge</span></td><td>app_db_connections_active</td><td>Active DB operations</td></tr>
-            <tr><td><span class="b b-green">Gauge</span></td><td>app_open_projects</td><td>Open projects count</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="sh"><div class="sh-title">Jenkins CI CD Docker Hub Flow</div><div class="sh-lab">CI/CD Diagram</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="../images/graph_chart_jenkins_CI_CD_auto_dockerhub.png" alt="Jenkins CI CD Docker Hub Flow" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
     </div>
   </div>
   <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">10</span></div>

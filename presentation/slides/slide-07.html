@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 7 of 16</title>
+<title>HireWave - Final Presentation - Slide 7 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -206,10 +209,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -234,48 +239,48 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">Testing Strategy</div><div class="sh-lab">Lab 5 · Testing</div></div>
+  <div class="sh"><div class="sh-title">Business Rules - BidService</div><div class="sh-lab">Lab 4 · Service Layer</div></div>
   <div class="sb">
     <div class="cols c3" style="flex:1;align-items:start">
-      <div class="box box-blue">
-        <h3>Unit Tests</h3>
-        <ul class="bul" style="margin-top:8px">
-          <li>JUnit 5 + Mockito</li>
-          <li>MongoDB mocked</li>
-          <li>Tests service business logic</li>
-          <li>Run: <code style="font-size:.8rem">./gradlew test</code></li>
+      <div>
+        <h2>Submit Bid</h2>
+        <div class="acl"></div>
+        <ul class="bul">
+          <li>Project must be OPEN</li>
+          <li>Freelancer must exist</li>
+          <li>No duplicate bid from the same freelancer</li>
+          <li>Freelancer has at least one matching skill</li>
+          <li>Freelancer has fewer than 3 active IN_PROGRESS projects</li>
         </ul>
-        <div style="margin-top:12px;text-align:center">
-          <span class="b b-blue" style="font-size:.9rem;padding:5px 14px">Fast · Isolated</span>
+      </div>
+      <div>
+        <h2>Accept Bid</h2>
+        <div class="acl"></div>
+        <ul class="bul">
+          <li>Accepted bid → ACCEPTED</li>
+          <li>All other PENDING bids → REJECTED (bulk)</li>
+          <li>Project → IN_PROGRESS</li>
+          <li>awardedFreelancerId set</li>
+        </ul>
+        <div class="box box-green" style="margin-top:12px">
+          <b style="font-size:.83rem">BidRepository.rejectAllPendingBidsExcept()</b>
+          <p style="margin-top:4px;font-size:.78rem">Atomic MongoDB bulk-reject operation.</p>
         </div>
       </div>
-      <div class="box box-amber">
-        <h3>Integration Tests</h3>
-        <ul class="bul" style="margin-top:8px">
-          <li>Testcontainers (real MongoDB)</li>
-          <li>Extend IntegrationTestBase</li>
-          <li>Tests controller + repository</li>
-          <li>Run: <code style="font-size:.8rem">./gradlew testIT</code></li>
+      <div>
+        <h2>Rate Freelancer</h2>
+        <div class="acl"></div>
+        <ul class="bul">
+          <li>Project must be COMPLETED</li>
+          <li>Calls FreelancerService.addRating()</li>
+          <li>ratingSum += score, totalRatings++</li>
+          <li>Average computed on demand</li>
         </ul>
-        <div style="margin-top:12px;text-align:center">
-          <span class="b b-amber" style="font-size:.9rem;padding:5px 14px">Requires Docker</span>
+        <div class="box box-amber" style="margin-top:12px">
+          <b style="font-size:.83rem">Complete / Cancel</b>
+          <p style="margin-top:4px;font-size:.78rem">Calls ClientService.incrementCompleted() or incrementCancelled() to update client reputation.</p>
         </div>
       </div>
-      <div class="box box-green">
-        <h3>E2E Tests (Cucumber)</h3>
-        <ul class="bul" style="margin-top:8px">
-          <li>Natural language scenarios</li>
-          <li>Requires app running on :8080</li>
-          <li>Tests full user flows</li>
-          <li>Run: <code style="font-size:.8rem">./gradlew testE2E</code></li>
-        </ul>
-        <div style="margin-top:12px;text-align:center">
-          <span class="b b-green" style="font-size:.9rem;padding:5px 14px">Real end-to-end</span>
-        </div>
-      </div>
-    </div>
-    <div class="box box-navy" style="margin-top:12px;padding:10px 16px">
-      <b style="font-size:.85rem">JaCoCo</b> — Code coverage report generated on every build. Excludes: config/, exception/, model/, repository/, request/, response/
     </div>
   </div>
   <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">7</span></div>

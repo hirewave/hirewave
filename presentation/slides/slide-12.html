@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 12 of 16</title>
+<title>HireWave - Final Presentation - Slide 12 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -206,10 +209,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -234,38 +239,41 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">Alerting — Why? How does it work?</div><div class="sh-lab">Lab 9 · Alerting</div></div>
+  <div class="sh"><div class="sh-title">Prometheus - Metrics Collection</div><div class="sh-lab">Lab 7 · Monitoring</div></div>
   <div class="sb">
-    <div class="cols c2" style="flex:1;align-items:start">
+    <div class="cols c-2-3" style="flex:1;align-items:start">
       <div>
-        <h2>The Problem</h2>
+        <h2>5 Active Targets</h2>
         <div class="acl"></div>
-        <ul class="bul">
-          <li>Dashboards show WHAT happened — not THAT something happened</li>
-          <li>Someone has to watch them around the clock</li>
-          <li>3 AM incident → nobody knows</li>
-        </ul>
-        <div class="box box-green" style="margin-top:14px">
-          <h3>The Solution</h3>
-          <p>Prometheus evaluates rules → AlertManager sends email automatically → engineer responds. A fully closed loop.</p>
+        <table>
+          <thead><tr><th>Target</th><th>Port</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>spring-prod-eng-app</td><td>8080</td><td><span class="b b-green">UP</span></td></tr>
+            <tr><td>cadvisor</td><td>8081</td><td><span class="b b-green">UP</span></td></tr>
+            <tr><td>mongodb-exporter</td><td>9001</td><td><span class="b b-green">UP</span></td></tr>
+            <tr><td>loki</td><td>3100</td><td><span class="b b-green">UP</span></td></tr>
+            <tr><td>prometheus (self)</td><td>9090</td><td><span class="b b-green">UP</span></td></tr>
+          </tbody>
+        </table>
+        <div class="box box-blue" style="margin-top:12px">
+          <h3>Scrape Interval: 30s</h3>
+          <p>Prometheus scrapes <code style="font-size:.8rem">/actuator/prometheus</code> on the Spring app. Metrics visible immediately in Prometheus UI.</p>
         </div>
       </div>
       <div>
-        <h2>Alert Lifecycle</h2>
+        <h2>Custom Metrics - MetricsService</h2>
         <div class="acl"></div>
-        <table class="lct">
-          <thead><tr><th>State</th><th>What happens</th><th>for:</th></tr></thead>
+        <table style="font-size:.68rem">
+          <thead><tr><th>Domain</th><th>Metric</th><th>Measures</th></tr></thead>
           <tbody>
-            <tr class="inactive"><td>Inactive</td><td>Condition is false, everything ok</td><td>—</td></tr>
-            <tr class="pending"><td>Pending</td><td>Condition is true, waiting for duration</td><td>running</td></tr>
-            <tr class="firing"><td>Firing</td><td>AlertManager receives it, sends email</td><td>elapsed</td></tr>
-            <tr class="resolved"><td>Resolved</td><td>Condition becomes false, resolution email sent</td><td>—</td></tr>
+            <tr><td><span class="b b-green">Client</span></td><td><code>app_clients_created_total</code><br><code>app_client_creation_failed_total</code></td><td>client create success/fail</td></tr>
+            <tr><td><span class="b b-green">Client</span></td><td><code>app_active_clients_total</code><br><code>app_client_lookup_duration_seconds</code></td><td>active clients + lookup latency</td></tr>
+            <tr><td><span class="b b-blue">Freelancer</span></td><td><code>app_freelancers_created_total</code><br><code>app_freelancer_creation_failed_total</code></td><td>freelancer create success/fail</td></tr>
+            <tr><td><span class="b b-blue">Freelancer</span></td><td><code>app_active_freelancers_total</code><br><code>app_freelancer_lookup_duration_seconds</code></td><td>active freelancers + lookup latency</td></tr>
+            <tr><td><span class="b b-purple">Rating</span></td><td><code>app_freelancer_rating_value_distribution</code><br><code>app_freelancer_rating_submitted_total</code></td><td>rating percentiles + score counts</td></tr>
+            <tr><td><span class="b b-amber">Bid</span></td><td><code>app_bids_submitted_total</code><br><code>app_bids_accepted_total</code><br><code>app_bids_rejected_total</code></td><td>bid workflow volume</td></tr>
           </tbody>
         </table>
-        <div class="box box-amber" style="margin-top:12px">
-          <b style="font-size:.85rem">The "for:" field</b>
-          <p style="margin-top:4px;font-size:.82rem">Debounce — avoids false alerts for momentary spikes. Container down → <code>for: 0m</code>. Latency → <code>for: 2m</code>.</p>
-        </div>
       </div>
     </div>
   </div>

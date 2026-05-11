@@ -108,7 +108,7 @@ def read_slide_sources(slides_dir: Path) -> tuple[str, str, list[tuple[str, str]
         browser = p.chromium.launch(headless=True)
         page = browser.new_page(viewport=VIEWPORT)
 
-        title = "HireWave — Final Presentation"
+        title = "HireWave - Final Presentation"
         style_text = ""
         slides: list[tuple[str, str]] = []
 
@@ -137,6 +137,7 @@ def read_slide_sources(slides_dir: Path) -> tuple[str, str, list[tuple[str, str]
             )
             if not slide_html:
                 raise RuntimeError(f"No .slide element found in {slide_file}")
+            slide_html = slide_html.replace("../images/", "images/")
 
             heading = page.evaluate(
                 """() => {

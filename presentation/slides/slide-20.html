@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave - Final Presentation - Slide 3 of 22</title>
+<title>HireWave - Final Presentation - Slide 20 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -205,6 +205,24 @@ tr:last-child td{border-bottom:none}
 .stat-l{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:6px;font-weight:600;
   text-transform:uppercase;letter-spacing:1px}
 
+/* ── TEAM CONTRIBUTION SLIDE ── */
+.team-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;flex:1;align-items:stretch}
+.team-card{position:relative;overflow:hidden;border:1px solid #dbe3ee;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+  padding:20px 18px 16px;min-height:344px;display:flex;flex-direction:column;box-shadow:0 12px 30px rgba(15,35,64,.08)}
+.team-card::before{content:'';position:absolute;inset:0 0 auto;height:5px;background:var(--team-accent,var(--blue))}
+.team-card::after{content:attr(data-index);position:absolute;right:14px;top:12px;font-size:3.4rem;font-weight:900;
+  line-height:1;color:rgba(30,58,95,.06);letter-spacing:-3px}
+.team-card .tm{position:relative;font-size:1.08rem;font-weight:900;color:var(--navy);line-height:1.1;max-width:75%}
+.team-card .tr{position:relative;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.3px;color:var(--team-accent,var(--blue));
+  margin-top:7px;margin-bottom:16px}
+.team-card ul.bul li{font-size:.82rem;line-height:1.42;padding-top:7px;padding-bottom:7px;background:transparent}
+.team-card ul.bul li::before{background:var(--team-accent,var(--blue))}
+.team-card .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:14px;border-top:1px solid #e5edf6}
+.team-card .tag-row .b{margin:0;font-size:.66rem;padding:3px 8px}
+.team-card.blue{--team-accent:var(--blue)}
+.team-card.amber{--team-accent:var(--amber)}
+.team-card.red{--team-accent:var(--red)}
+
 /* ── ACCENT LINE ── */
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
@@ -239,49 +257,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">What is HireWave?</div><div class="sh-lab">Lab 1-2 · Project</div></div>
-  <div class="sb">
-    <div class="cols c-2-3" style="flex:1;align-items:start">
-      <div>
-        <h2>Description</h2>
-        <div class="acl"></div>
-        <p style="font-size:.92rem;color:var(--ink2);line-height:1.65">
-          A REST API platform for the freelance market. Clients post projects, freelancers place bids, the client picks the winner.
-        </p>
-        <div style="margin-top:14px">
-          <h3>Tech Stack</h3>
-          <ul class="bul" style="margin-top:6px">
-            <li>Java 21 + Spring Boot 3.4</li>
-            <li>MongoDB 6.0 (Spring Data)</li>
-            <li>Jakarta Bean Validation</li>
-            <li>Docker + Docker Compose</li>
-          </ul>
-        </div>
-      </div>
-      <div>
-        <h2>Main Flow</h2>
-        <div class="acl"></div>
-        <div class="flow" style="margin-bottom:12px">
-          <div class="fb"><span class="fv" style="color:var(--green)">OPEN</span><span class="fl">project created</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--amber)">IN_PROGRESS</span><span class="fl">bid accepted</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--blue)">COMPLETED</span><span class="fl">done + rating</span></div>
-        </div>
-        <div class="flow">
-          <div class="fb"><span class="fv" style="color:var(--green)">OPEN</span><span class="fl">project created</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--red)">CANCELLED</span><span class="fl">cancelled by client</span></div>
-          <div class="fb" style="flex:2;background:#fafafa"><span class="fl" style="font-size:.72rem;padding:0 8px;color:#94a3b8">or directly from OPEN</span></div>
-        </div>
-        <div class="box box-blue" style="margin-top:12px">
-          <b style="font-size:.85rem">Bid status:</b> <span class="b b-gray">PENDING</span> → <span class="b b-green">ACCEPTED</span> or <span class="b b-red">REJECTED</span>
-          <p style="margin-top:4px;font-size:.8rem">Accepting a bid automatically bulk-rejects all other PENDING bids on the same project.</p>
-        </div>
-      </div>
+  <div class="sh"><div class="sh-title">Prometheus Alerts</div><div class="sh-lab">Alerting Screenshot</div></div>
+  <div class="sb" style="padding:14px 24px 0">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#f8fafc;border:1px solid var(--border);overflow:hidden;padding:12px">
+      <img src="../images/prometheus_alerts.png" alt="Prometheus Alerts" style="max-width:100%;max-height:100%;object-fit:contain;display:block">
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">3</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">20</span></div>
 </div>
 </div>
 </body>

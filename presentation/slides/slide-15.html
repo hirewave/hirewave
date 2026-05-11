@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 15 of 16</title>
+<title>HireWave - Final Presentation - Slide 15 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -206,10 +209,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -234,57 +239,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">Alert Lifecycle Test — Proof of Work</div><div class="sh-lab">Lab 9 · Proof of Work</div></div>
+  <div class="sh"><div class="sh-title">Alerting - Why? How does it work?</div><div class="sh-lab">Lab 9 · Alerting</div></div>
   <div class="sb">
     <div class="cols c2" style="flex:1;align-items:start">
       <div>
-        <h2>Tested Scenario</h2>
+        <h2>The Problem</h2>
         <div class="acl"></div>
-        <table>
-          <thead><tr><th>Time</th><th>Action / State</th></tr></thead>
-          <tbody>
-            <tr><td>T+0s</td><td>docker stop &lt;prod-eng container&gt;</td></tr>
-            <tr><td>T+30s</td><td><span class="b b-amber">WARNING</span> ServiceHealthCheckFailing → Firing</td></tr>
-            <tr><td>T+40s</td><td>Email [WARNING] sent to cla***@tra***.com</td></tr>
-            <tr><td>T+60s</td><td><span class="b b-red">CRITICAL</span> ApplicationContainerDown → Firing</td></tr>
-            <tr><td>T+3m</td><td>docker start &lt;prod-eng container&gt;</td></tr>
-            <tr><td>T+3m30s</td><td>Both alerts → Resolved, resolution email sent</td></tr>
-          </tbody>
-        </table>
-        <div class="box box-green" style="margin-top:12px">
-          <b>AlertManager log confirmed:</b>
-          <p style="font-family:monospace;font-size:.78rem;margin-top:4px">msg="Notify success" receiver=warning-email attempts=1 duration=1.599s</p>
+        <ul class="bul">
+          <li>Dashboards show WHAT happened - not THAT something happened</li>
+          <li>Someone has to watch them around the clock</li>
+          <li>3 AM incident → nobody knows</li>
+        </ul>
+        <div class="box box-green" style="margin-top:14px">
+          <h3>The Solution</h3>
+          <p>Prometheus evaluates rules → AlertManager sends email automatically → engineer responds. A fully closed loop.</p>
         </div>
-        <p style="font-size:.82rem;color:var(--muted);margin-top:8px">Automated test: <code style="font-size:.8rem">python3 test_alerts.py</code> — script at project root.</p>
       </div>
       <div>
-        <h2>Required Screenshots</h2>
+        <h2>Alert Lifecycle</h2>
         <div class="acl"></div>
-        <div class="cols c2" style="gap:10px">
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">Prometheus — FIRING</span>
-              <span class="ss-url">:9090/alerts</span>
-            </div>
-          </div>
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">AlertManager UI</span>
-              <span class="ss-url">:9093</span>
-            </div>
-          </div>
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">Email primit</span>
-              <span class="ss-url">inbox</span>
-            </div>
-          </div>
-          <div class="ss" style="min-height:100px">
-            <div class="ss-inner">
-              <span class="ss-lbl" style="font-size:.72rem">Grafana thresholds</span>
-              <span class="ss-url">:3000</span>
-            </div>
-          </div>
+        <table class="lct">
+          <thead><tr><th>State</th><th>What happens</th><th>for:</th></tr></thead>
+          <tbody>
+            <tr class="inactive"><td>Inactive</td><td>Condition is false, everything ok</td><td>-</td></tr>
+            <tr class="pending"><td>Pending</td><td>Condition is true, waiting for duration</td><td>running</td></tr>
+            <tr class="firing"><td>Firing</td><td>AlertManager receives it, sends email</td><td>elapsed</td></tr>
+            <tr class="resolved"><td>Resolved</td><td>Condition becomes false, resolution email sent</td><td>-</td></tr>
+          </tbody>
+        </table>
+        <div class="box box-amber" style="margin-top:12px">
+          <b style="font-size:.85rem">The "for:" field</b>
+          <p style="margin-top:4px;font-size:.82rem">Debounce - avoids false alerts for momentary spikes. Container down → <code>for: 0m</code>. Latency → <code>for: 2m</code>.</p>
         </div>
       </div>
     </div>

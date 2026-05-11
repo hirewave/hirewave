@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave - Final Presentation - Slide 3 of 22</title>
+<title>HireWave - Final Presentation - Slide 18 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -239,49 +239,54 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">What is HireWave?</div><div class="sh-lab">Lab 1-2 · Project</div></div>
+  <div class="sh"><div class="sh-title">AlertManager - Configuration</div><div class="sh-lab">Lab 9 · AlertManager</div></div>
   <div class="sb">
-    <div class="cols c-2-3" style="flex:1;align-items:start">
+    <div class="cols c3" style="flex:1;align-items:start">
       <div>
-        <h2>Description</h2>
+        <h2>Severity-Based Routing</h2>
         <div class="acl"></div>
-        <p style="font-size:.92rem;color:var(--ink2);line-height:1.65">
-          A REST API platform for the freelance market. Clients post projects, freelancers place bids, the client picks the winner.
-        </p>
-        <div style="margin-top:14px">
-          <h3>Tech Stack</h3>
-          <ul class="bul" style="margin-top:6px">
-            <li>Java 21 + Spring Boot 3.4</li>
-            <li>MongoDB 6.0 (Spring Data)</li>
-            <li>Jakarta Bean Validation</li>
-            <li>Docker + Docker Compose</li>
-          </ul>
+        <table>
+          <thead><tr><th>Severity</th><th>Receiver</th><th>Repeat</th></tr></thead>
+          <tbody>
+            <tr><td><span class="b b-red">critical</span></td><td>critical-email</td><td>5 min</td></tr>
+            <tr><td><span class="b b-amber">warning</span></td><td>warning-email</td><td>30 min</td></tr>
+          </tbody>
+        </table>
+        <div class="box box-blue" style="margin-top:12px">
+          <h3>Email</h3>
+          <p><b>SMTP:</b> smtp.gmail.com:587<br><b>Auth:</b> Gmail App Password</p>
         </div>
       </div>
       <div>
-        <h2>Main Flow</h2>
+        <h2>Inhibition</h2>
         <div class="acl"></div>
-        <div class="flow" style="margin-bottom:12px">
-          <div class="fb"><span class="fv" style="color:var(--green)">OPEN</span><span class="fl">project created</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--amber)">IN_PROGRESS</span><span class="fl">bid accepted</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--blue)">COMPLETED</span><span class="fl">done + rating</span></div>
+        <p style="font-size:.88rem;color:var(--ink2);line-height:1.6">If a CRITICAL alert is active, the WARNING for the same <code style="font-size:.82rem">alert_group</code> is automatically suppressed.</p>
+        <div class="box box-amber" style="margin-top:12px">
+          <p style="font-size:.83rem"><b>Example:</b> ServiceHealthCheck CRITICAL active → ServiceHealthCheck WARNING is inhibited. One email instead of two.</p>
         </div>
-        <div class="flow">
-          <div class="fb"><span class="fv" style="color:var(--green)">OPEN</span><span class="fl">project created</span></div>
-          <span class="fa">›</span>
-          <div class="fb"><span class="fv" style="color:var(--red)">CANCELLED</span><span class="fl">cancelled by client</span></div>
-          <div class="fb" style="flex:2;background:#fafafa"><span class="fl" style="font-size:.72rem;padding:0 8px;color:#94a3b8">or directly from OPEN</span></div>
+        <div class="box box-red" style="margin-top:12px">
+          <h3>Security</h3>
+          <p style="font-size:.82rem">The real <b>infrastructure/alertmanager/alertmanager.yml</b> is gitignored because it contains SMTP credentials.</p>
         </div>
-        <div class="box box-blue" style="margin-top:12px">
-          <b style="font-size:.85rem">Bid status:</b> <span class="b b-gray">PENDING</span> → <span class="b b-green">ACCEPTED</span> or <span class="b b-red">REJECTED</span>
-          <p style="margin-top:4px;font-size:.8rem">Accepting a bid automatically bulk-rejects all other PENDING bids on the same project.</p>
+      </div>
+      <div>
+        <h2>Grouping</h2>
+        <div class="acl"></div>
+        <table>
+          <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>group_by</td><td>alertname, severity</td></tr>
+            <tr><td>group_wait</td><td>10s</td></tr>
+            <tr><td>group_interval</td><td>10s</td></tr>
+          </tbody>
+        </table>
+        <div class="box box-green" style="margin-top:12px">
+          <p style="font-size:.83rem">Alerts with the same <b>alertname + severity</b> are grouped into one email. Prevents spam during large incidents.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">3</span></div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">18</span></div>
 </div>
 </div>
 </body>

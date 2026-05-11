@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HireWave — Final Presentation - Slide 9 of 16</title>
+<title>HireWave - Final Presentation - Slide 9 of 22</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +152,9 @@ tr:last-child td{border-bottom:none}
 .ss::before{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
     rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss:has(img){border-style:solid;background:#fff}
+.ss:has(img)::before{display:none}
+.ss img{position:relative;z-index:2}
 .ss-inner{position:relative;z-index:1;text-align:center}
 .ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
 .ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
@@ -206,10 +209,12 @@ tr:last-child td{border-bottom:none}
 .acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:10px;z-index:100;
-  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
-  padding:7px 16px}
+.nav{position:fixed;bottom:0;left:0;right:0;transform:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border-top:1px solid rgba(255,255,255,.1);
+  padding:10px 16px 12px;min-height:56px;opacity:0;
+  transition:opacity .18s ease}
+.nav:hover,.nav:focus-within{opacity:1}
 .nb{background:none;border:none;cursor:pointer;color:white;
   font-size:1rem;padding:4px 8px;transition:background .1s}
 .nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
@@ -234,39 +239,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:#334155}
 <body>
 <div class="deck">
 <div class="slide active">
-  <div class="sh"><div class="sh-title">Docker &amp; Semantic Versioning</div><div class="sh-lab">Lab 6 · Deployment</div></div>
+  <div class="sh"><div class="sh-title">Jenkins CI/CD Pipeline</div><div class="sh-lab">Lab 6 · Deployment</div></div>
   <div class="sb">
-    <div class="cols c2" style="flex:1;align-items:start">
-      <div>
-        <h2>Docker Strategy</h2>
+    <div class="pipe" style="margin-bottom:16px">
+      <div class="ps"><span class="pn">01</span><span class="pt">Build</span><span class="pd">gradlew clean build</span></div>
+      <div class="ps-arrow">›</div>
+      <div class="ps"><span class="pn">02</span><span class="pt">Test</span><span class="pd">unit tests</span></div>
+      <div class="ps-arrow">›</div>
+      <div class="ps"><span class="pn">03</span><span class="pt">Version</span><span class="pd">git tag → semver</span></div>
+      <div class="ps-arrow">›</div>
+      <div class="ps"><span class="pn">04</span><span class="pt">Docker Build</span><span class="pd">prod-eng-img:x.y.z</span></div>
+      <div class="ps-arrow">›</div>
+      <div class="ps"><span class="pn">05</span><span class="pt">Push</span><span class="pd">Docker Hub</span></div>
+      <div class="ps-arrow">›</div>
+      <div class="ps"><span class="pn">06</span><span class="pt">Deploy</span><span class="pd">docker compose up</span></div>
+    </div>
+    <div class="cols" style="grid-template-columns:minmax(250px,.8fr) minmax(0,1.6fr);gap:18px;flex:1;min-height:0;align-items:stretch">
+      <div class="box box-blue" style="height:100%;display:flex;flex-direction:column;justify-content:center;padding:14px 16px">
+        <h2>Git Flow</h2>
         <div class="acl"></div>
         <ul class="bul">
-          <li>Multi-stage Dockerfile (builder + runtime)</li>
-          <li>Image tagged with semver</li>
-          <li>Auto push to Docker Hub: <code style="font-size:.78rem">${DOCKER_HUB_USERNAME}/prod-eng-img:x.y.z</code></li>
-          <li>Deploy via Docker Compose profiles</li>
-          <li>Jenkins has Docker socket access (/var/run/docker.sock)</li>
+          <li>Feature branches off main</li>
+          <li>Pull Requests with mandatory review</li>
+          <li>Jenkinsfile defines build, test, version, deploy and tag stages</li>
+          <li>Minor version auto-incremented on every build</li>
         </ul>
-        <div class="box box-blue" style="margin-top:14px">
-          <h3>Docker Compose Profiles</h3>
-          <p><code style="font-size:.8rem">prod-eng-service</code> · <code style="font-size:.8rem">monitoring</code> · <code style="font-size:.8rem">mongo</code> · <code style="font-size:.8rem">perf</code></p>
-          <p style="margin-top:4px;font-size:.8rem">Each profile starts an independent subset of services.</p>
-        </div>
       </div>
-      <div>
-        <h2>Semantic Versioning</h2>
-        <div class="acl"></div>
-        <table>
-          <thead><tr><th>Component</th><th>How it's derived</th></tr></thead>
-          <tbody>
-            <tr><td>MAJOR</td><td>from last git tag (e.g. <b>1</b>.23.0)</td></tr>
-            <tr><td>MINOR</td><td>auto-incremented on every build</td></tr>
-            <tr><td>PATCH</td><td>from last git tag</td></tr>
-          </tbody>
-        </table>
-        <div class="box box-green" style="margin-top:14px">
-          <p style="font-size:.85rem">Example: after a merge, if last version was <b>1.22.0</b>, the new build produces tag <b>1.23.0</b> and image <code style="font-size:.82rem">prod-eng-img:1.23.0</code></p>
-        </div>
+      <div class="ss" style="height:100%;min-height:0;padding:12px;background:#fff;border-style:solid;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box">
+        <img src="../images/jenkins_build_succeded.png" alt="Jenkins build succeeded" style="width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block">
       </div>
     </div>
   </div>
