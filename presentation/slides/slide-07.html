@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HireWave — Final Presentation - Slide 7 of 16</title>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:#1e3a5f;
+  --navy2:#0f2340;
+  --blue:#2563eb;
+  --blue2:#1d4ed8;
+  --accent:#3b82f6;
+  --white:#ffffff;
+  --off:#f1f5f9;
+  --ink:#0f172a;
+  --ink2:#1e293b;
+  --muted:#475569;
+  --border:#cbd5e1;
+  --green:#15803d;
+  --greenbg:#dcfce7;
+  --amber:#b45309;
+  --amberbg:#fef3c7;
+  --red:#b91c1c;
+  --redbg:#fee2e2;
+  --purple:#6d28d9;
+  --purplebg:#ede9fe;
+}
+
+html,body{height:100%;overflow:hidden;background:#334155;
+  font-family:'Segoe UI',Calibri,Arial,sans-serif;color:var(--ink)}
+
+/* ── SLIDE ENGINE ── */
+.deck{position:relative;width:100vw;height:100vh;
+  display:flex;align-items:center;justify-content:center}
+
+.slide{
+  position:absolute;
+  width:min(177.78vh, 100vw);
+  height:min(56.25vw, 100vh);
+  background:var(--white);
+  opacity:0;pointer-events:none;
+  transform:translateX(40px);
+  transition:opacity .3s ease,transform .3s ease;
+  display:flex;flex-direction:column;
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+  overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.el{opacity:0;transform:translateX(-40px)}
+
+/* ── SLIDE HEADER ── */
+.sh{background:var(--navy);padding:18px 40px 16px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between}
+.sh-title{font-size:clamp(1.2rem,2.6vw,1.9rem);font-weight:700;
+  color:var(--white);letter-spacing:-.3px}
+.sh-lab{font-size:.75rem;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+/* ── SLIDE BODY ── */
+.sb{flex:1;padding:22px 40px 0;overflow:hidden;display:flex;flex-direction:column}
+.sb-full{padding:0;flex:1;display:flex;flex-direction:column}
+
+/* ── FOOTER ── */
+.sf{background:var(--navy2);height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px}
+.sf-left{font-size:.68rem;color:rgba(255,255,255,.35);font-weight:500;letter-spacing:.5px}
+.sf-num{font-size:.68rem;color:rgba(255,255,255,.35);font-weight:600}
+
+/* ── TITLE SLIDE ── */
+.title-slide{flex-direction:row}
+.ts-left{background:var(--navy);flex:0 0 42%;display:flex;flex-direction:column;
+  justify-content:center;padding:40px}
+.ts-right{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px}
+.ts-label{font-size:.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-bottom:16px}
+.ts-title{font-size:clamp(3rem,6vw,5rem);font-weight:900;letter-spacing:-2px;
+  color:var(--white);line-height:.95}
+.ts-sub{font-size:.95rem;color:rgba(255,255,255,.6);margin-top:16px;line-height:1.6}
+.ts-right h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:12px;
+  text-transform:uppercase;letter-spacing:1px;font-size:.78rem}
+
+/* ── SECTION SLIDE ── */
+.section-slide .sb{align-items:center;justify-content:center;text-align:center;padding:30px 40px}
+.section-num{font-size:5rem;font-weight:900;color:var(--off);line-height:1;
+  font-variant-numeric:tabular-nums}
+.section-title{font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:800;
+  color:var(--navy);margin-top:8px}
+.section-sub{font-size:1rem;color:var(--muted);margin-top:10px;max-width:600px}
+
+/* ── TYPOGRAPHY ── */
+h2{font-size:clamp(1.1rem,2vw,1.5rem);font-weight:700;color:var(--ink);margin-bottom:10px}
+h3{font-size:.88rem;font-weight:700;color:var(--ink2);margin-bottom:7px;
+  text-transform:uppercase;letter-spacing:.8px}
+p{font-size:.9rem;line-height:1.55;color:var(--muted)}
+
+/* ── BULLET LISTS ── */
+ul.bul{list-style:none;padding:0}
+ul.bul li{font-size:clamp(.8rem,1.4vw,1rem);line-height:1.5;color:var(--ink2);
+  padding:5px 0 5px 20px;position:relative;border-bottom:1px solid #f1f5f9}
+ul.bul li:last-child{border-bottom:none}
+ul.bul li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;background:var(--blue);clip-path:polygon(0 0,100% 50%,0 100%)}
+ul.bul li.sub{font-size:.82rem;color:var(--muted);padding-left:32px}
+ul.bul li.sub::before{width:5px;height:5px;background:var(--border);left:14px}
+
+/* ── COLUMNS ── */
+.cols{display:grid;gap:16px;width:100%}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c4{grid-template-columns:repeat(4,1fr)}
+.c-3-2{grid-template-columns:3fr 2fr}
+.c-2-3{grid-template-columns:2fr 3fr}
+
+/* ── BOX ── */
+.box{border:1px solid var(--border);padding:14px 16px;background:var(--white)}
+.box-blue  {background:#eff6ff;border-color:#bfdbfe}
+.box-green {background:#f0fdf4;border-color:#bbf7d0}
+.box-amber {background:#fffbeb;border-color:#fde68a}
+.box-red   {background:#fef2f2;border-color:#fecaca}
+.box-navy  {background:var(--navy);border-color:var(--navy)}
+.box-navy *{color:var(--white)!important}
+.box-navy h3{color:rgba(255,255,255,.6)!important}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{background:var(--navy);color:var(--white);text-align:left;
+  padding:8px 12px;font-weight:700;font-size:.75rem;letter-spacing:.5px}
+td{padding:7px 12px;border-bottom:1px solid var(--border);color:var(--ink2)}
+tr:nth-child(even) td{background:#f8fafc}
+tr:last-child td{border-bottom:none}
+
+/* ── BADGE ── */
+.b{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;
+  letter-spacing:.3px;margin:2px;border:1px solid transparent}
+.b-blue  {background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}
+.b-green {background:#dcfce7;color:#15803d;border-color:#bbf7d0}
+.b-amber {background:#fef3c7;color:#b45309;border-color:#fde68a}
+.b-red   {background:#fee2e2;color:#b91c1c;border-color:#fecaca}
+.b-purple{background:#ede9fe;color:#6d28d9;border-color:#ddd6fe}
+.b-gray  {background:#f1f5f9;color:#475569;border-color:#cbd5e1}
+.b-white {background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)}
+
+/* ── SCREENSHOT ── */
+.ss{border:2px dashed var(--border);background:#f8fafc;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;min-height:160px;position:relative;overflow:hidden}
+.ss::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-45deg,transparent,transparent 8px,
+    rgba(0,0,0,.025) 8px,rgba(0,0,0,.025) 16px)}
+.ss-inner{position:relative;z-index:1;text-align:center}
+.ss-icon{width:28px;height:28px;opacity:.25;margin:0 auto 6px}
+.ss-lbl{font-size:.8rem;font-weight:700;color:var(--muted);
+  background:white;border:1px solid var(--border);padding:4px 12px;display:inline-block}
+.ss-url{font-size:.7rem;color:#94a3b8;font-family:monospace;margin-top:4px;display:block}
+
+/* ── PIPELINE ── */
+.pipe{display:flex;align-items:stretch;width:100%}
+.ps{flex:1;background:var(--navy);color:white;text-align:center;
+  padding:14px 8px;position:relative;border-right:none}
+.ps:first-child{}
+.ps:last-child{}
+.ps .pn{display:block;font-size:.62rem;font-weight:700;
+  color:rgba(255,255,255,.5);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.ps .pt{display:block;font-size:.9rem;font-weight:800;color:white}
+.ps .pd{display:block;font-size:.7rem;color:rgba(255,255,255,.55);margin-top:3px}
+.ps-arrow{background:var(--navy2);display:flex;align-items:center;
+  padding:0 2px;color:var(--accent);font-size:1.1rem;flex-shrink:0}
+
+/* ── FLOW ── */
+.flow{display:flex;align-items:center;gap:0;flex-wrap:nowrap;width:100%}
+.fb{background:var(--off);border:1px solid var(--border);
+  flex:1;text-align:center;padding:12px 6px}
+.fb .fv{font-size:1.1rem;font-weight:800;color:var(--navy);display:block}
+.fb .fl{font-size:.7rem;color:var(--muted);display:block;margin-top:3px}
+.fa{color:var(--border);font-size:1.4rem;flex-shrink:0;padding:0 4px}
+
+/* ── ALERT ROW ── */
+.ar{display:grid;grid-template-columns:85px 1fr 1fr 60px;
+  align-items:center;gap:12px;padding:8px 12px;
+  border:1px solid var(--border);border-bottom:none;background:white}
+.ar:last-child{border-bottom:1px solid var(--border)}
+.ar.aw{border-left:4px solid var(--amber)}
+.ar.ac{border-left:4px solid var(--red)}
+.ar .an{font-size:.85rem;font-weight:700;color:var(--ink2)}
+.ar .ae{font-size:.75rem;color:var(--muted);font-family:monospace}
+.ar .af{font-size:.73rem;color:var(--muted);font-family:monospace;text-align:right}
+
+/* ── LIFECYCLE TABLE ── */
+.lct tr.inactive td:first-child{color:#64748b;font-weight:800}
+.lct tr.pending  td:first-child{color:var(--amber);font-weight:800}
+.lct tr.firing   td:first-child{color:var(--red);font-weight:800}
+.lct tr.resolved td:first-child{color:var(--green);font-weight:800}
+
+/* ── STAT LARGE ── */
+.stat-lg{text-align:center;padding:16px 8px;background:var(--navy)}
+.stat-v{font-size:3.2rem;font-weight:900;letter-spacing:-2px;color:white;line-height:1}
+.stat-l{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:6px;font-weight:600;
+  text-transform:uppercase;letter-spacing:1px}
+
+/* ── ACCENT LINE ── */
+.acl{width:40px;height:4px;background:var(--blue);margin:10px 0 16px}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:10px;z-index:100;
+  background:rgba(15,23,42,.9);border:1px solid rgba(255,255,255,.1);
+  padding:7px 16px}
+.nb{background:none;border:none;cursor:pointer;color:white;
+  font-size:1rem;padding:4px 8px;transition:background .1s}
+.nb:hover:not(:disabled){background:rgba(255,255,255,.1)}
+.nb:disabled{opacity:.2;cursor:not-allowed}
+.nc{font-size:.78rem;color:rgba(255,255,255,.5);min-width:48px;
+  text-align:center;font-weight:600;font-family:monospace}
+.dots{display:flex;gap:5px}
+.dot{width:6px;height:6px;background:rgba(255,255,255,.2);cursor:pointer;
+  transition:background .2s,transform .2s}
+.dot.on{background:var(--accent);transform:scale(1.5)}
+
+/* PROGRESS */
+#prog{position:fixed;top:0;left:0;height:3px;background:var(--blue);
+  transition:width .3s;z-index:999}
+
+html,body{width:100%;height:100%;overflow:hidden;background:#334155}
+.deck{width:100vw;height:100vh}
+.slide{position:relative;opacity:1!important;pointer-events:all!important;transform:none!important;transition:none!important;box-shadow:none!important}
+.nav,#prog{display:none!important}
+</style>
+</head>
+<body>
+<div class="deck">
+<div class="slide active">
+  <div class="sh"><div class="sh-title">Testing Strategy</div><div class="sh-lab">Lab 5 · Testing</div></div>
+  <div class="sb">
+    <div class="cols c3" style="flex:1;align-items:start">
+      <div class="box box-blue">
+        <h3>Unit Tests</h3>
+        <ul class="bul" style="margin-top:8px">
+          <li>JUnit 5 + Mockito</li>
+          <li>MongoDB mocked</li>
+          <li>Tests service business logic</li>
+          <li>Run: <code style="font-size:.8rem">./gradlew test</code></li>
+        </ul>
+        <div style="margin-top:12px;text-align:center">
+          <span class="b b-blue" style="font-size:.9rem;padding:5px 14px">Fast · Isolated</span>
+        </div>
+      </div>
+      <div class="box box-amber">
+        <h3>Integration Tests</h3>
+        <ul class="bul" style="margin-top:8px">
+          <li>Testcontainers (real MongoDB)</li>
+          <li>Extend IntegrationTestBase</li>
+          <li>Tests controller + repository</li>
+          <li>Run: <code style="font-size:.8rem">./gradlew testIT</code></li>
+        </ul>
+        <div style="margin-top:12px;text-align:center">
+          <span class="b b-amber" style="font-size:.9rem;padding:5px 14px">Requires Docker</span>
+        </div>
+      </div>
+      <div class="box box-green">
+        <h3>E2E Tests (Cucumber)</h3>
+        <ul class="bul" style="margin-top:8px">
+          <li>Natural language scenarios</li>
+          <li>Requires app running on :8080</li>
+          <li>Tests full user flows</li>
+          <li>Run: <code style="font-size:.8rem">./gradlew testE2E</code></li>
+        </ul>
+        <div style="margin-top:12px;text-align:center">
+          <span class="b b-green" style="font-size:.9rem;padding:5px 14px">Real end-to-end</span>
+        </div>
+      </div>
+    </div>
+    <div class="box box-navy" style="margin-top:12px;padding:10px 16px">
+      <b style="font-size:.85rem">JaCoCo</b> — Code coverage report generated on every build. Excludes: config/, exception/, model/, repository/, request/, response/
+    </div>
+  </div>
+  <div class="sf"><span class="sf-left">HireWave · Production Engineering 2026</span><span class="sf-num">7</span></div>
+</div>
+</div>
+</body>
+</html>

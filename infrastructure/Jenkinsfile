@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_HUB_USERNAME = 'masacru'
+        DOCKER_HUB_USERNAME = credentials('docker_hub_username')
         DOCKER_PASSWORD = credentials('docker_password')
         GITHUB_TOKEN = credentials('github_token')
     }
